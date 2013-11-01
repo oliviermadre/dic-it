@@ -1,0 +1,6 @@
+include:
+    - part/container_test_parameters.yml
+    - part/container_test_interceptors.yml
+    - part/container_test_service.yml
+    - part/container_test_manager.yml
+    - part/container_test_storage.yml

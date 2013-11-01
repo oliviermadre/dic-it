@@ -1,0 +1,26 @@
+{
+    "name": "oliviermadre/dic-it",
+    "description": "Yet another dependency injection container",
+    "version": "1.0.0",
+    "type": "library",
+    "homepage" : "http://github.com/oliviermadre/dic-it",
+    "keywords": [],
+    "time": "2013-11-01",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Olivier Madre",
+            "email": "terenas@gmail.com",
+            "homepage": "http://about.me/oliviermadre",
+            "role": "Developer"
+        }
+    ],
+    "autoload" : {
+        "psr-0" : {
+            "" : "src/"
+        }
+    },
+    "require" : {
+        "symfony/yaml": "2.4.*@dev"
+    }
+}
