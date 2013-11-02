@@ -7,19 +7,29 @@ class DICIT_ConfigYML extends DICIT_ConfigAbstract {
     }
 
     public function load() {
-        return $this->loadFile($this->filePath);
+        $ret = $this->loadFile($this->filePath);
+        var_dump($ret);
+        return $ret;
     }
 
     protected function loadFile($filePath) {
         $yml = array();
-        $dirname = dirname($this->filePath);
+        $dirname = dirname($filePath);
         $yaml = new Symfony\Component\Yaml\Yaml();
-        $res = $yaml->parse($this->filePath);
-        if (array_key_exists('include', $res)) {
-            foreach($res['include'] as $key => $value) {
-                $yml = array_merge_recursive($yml, $yaml->parse($dirname . '/'. $value));
+        $res = $yaml->parse($filePath);
+
+        foreach($res as $key => $value) {
+            if ($key == 'include') {
+                foreach($value as $file) {
+                    $subYml = $this->loadFile($dirname . '/' . $file);
+                    $yml = array_merge_recursive($yml, $subYml);
+                }
+            }
+            elseif ($key == 'classes') {
+                $yml = array_merge_recursive($yml, array('classes' => $res[$key]));
             }
         }
+
         return $yml;
     }
 

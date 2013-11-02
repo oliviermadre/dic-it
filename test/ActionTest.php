@@ -20,7 +20,6 @@ require TEST_DIR . '/DummyFramework/Berthe/Store/Echo.php';
 
 // Getting config using YML
 $cfgYML = new DICIT_ConfigYML(ROOT_DIR . '/test/config/container_test.yml');
-
 // Compile it in PHP to load it faster next time
 $dump = $cfgYML->compile();
 $dump = '<?php $array = ' . $dump . ';';
