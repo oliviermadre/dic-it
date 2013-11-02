@@ -8,7 +8,6 @@ class DICIT_ConfigYML extends DICIT_ConfigAbstract {
 
     public function load() {
         $ret = $this->loadFile($this->filePath);
-        var_dump($ret);
         return $ret;
     }
 
