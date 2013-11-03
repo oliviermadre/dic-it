@@ -4,12 +4,12 @@ class Berthe_Service_Country {
     protected $arg1 = null;
     protected $arg2 = null;
 
-    public function __construct($arg1, $arg2) {
+    public function __construct(Berthe_Modules_Country_Manager $arg1, $arg2) {
         $this->arg1 = $arg1;
         $this->arg2 = $arg2;
     }
 
-    public function setManager($manager) {
+    public function setManager(Berthe_Modules_Country_Manager $manager) {
         $this->manager = $manager;
         return $this;
     }

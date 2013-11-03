@@ -95,7 +95,11 @@ class DICIT_Container {
         }
 
         if (array_key_exists('arguments', $serviceConfig)) {
-            $constructorArgs = $serviceConfig['arguments'];
+            $arguments = $serviceConfig['arguments'];
+
+            foreach($arguments as $arg) {
+                $constructorArgs[] = $this->convertValue($arg);
+            }
         }
 
         try {
