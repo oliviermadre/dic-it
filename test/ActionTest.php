@@ -19,14 +19,14 @@ require TEST_DIR . '/DummyFramework/Berthe/Store/Array.php';
 require TEST_DIR . '/DummyFramework/Berthe/Store/Echo.php';
 
 // Getting config using YML
-$cfgYML = new DICIT_ConfigYML(ROOT_DIR . '/test/config/container_test.yml');
+$cfgYML = new \DICIT\Config\YML(ROOT_DIR . '/test/config/container_test.yml');
 // Compile it in PHP to load it faster next time
 $dump = $cfgYML->compile();
 $dump = '<?php $array = ' . $dump . ';';
 file_put_contents(ROOT_DIR . '/test/config/generated.php', $dump);
 
 // Start the application with the PHP config file
-$cfgPHP = new DICIT_ConfigPHP(ROOT_DIR . '/test/config/generated.php');
+$cfgPHP = new DICIT\Config\PHP(ROOT_DIR . '/test/config/generated.php');
 $init = new Initializer($cfgPHP);
 
 // Go Dispatch !

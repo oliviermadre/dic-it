@@ -4,3 +4,12 @@ include:
     - part/container_test_service.yml
     - part/container_test_manager.yml
     - part/container_test_storage.yml
+
+classes:
+    otherClass :
+        class : Test
+
+
+otherKey:
+    otherKeyClass :
+        aze : qsd

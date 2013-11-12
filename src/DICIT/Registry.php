@@ -1,5 +1,7 @@
 <?php
-class DICIT_Registry {
+namespace DICIT;
+
+class Registry {
     protected $data = array();
 
     public function __construct() {
@@ -16,7 +18,7 @@ class DICIT_Registry {
             return $this->data[$key];
         }
         else if ($throwIfNotFound) {
-            throw new RuntimeException('Key ' . $key . ' not found in DI Container registry');
+            throw new \RuntimeException('Key ' . $key . ' not found in DI Container registry');
         }
         else {
             return null;

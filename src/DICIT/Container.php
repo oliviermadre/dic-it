@@ -1,10 +1,12 @@
 <?php
-class DICIT_Container {
+namespace DICIT;
+
+class Container {
     protected $config = array();
     protected $registry = null;
 
-    public function __construct(DICIT_ConfigAbstract $cfg) {
-        $this->registry = new DICIT_Registry();
+    public function __construct(Config\Abstract $cfg) {
+        $this->registry = new Registry();
         $this->config = $cfg->load();
     }
 
@@ -35,17 +37,17 @@ class DICIT_Container {
                 return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
             }
             else {
-                throw new RuntimeException('Class not configured ' . $serviceName);
+                throw new \RuntimeException('Class not configured ' . $serviceName);
             }
         }
         else {
-            throw new RuntimeException('Container not loaded');
+            throw new \RuntimeException('Container not loaded');
         }
     }
 
     /**
      * Flush the registry
-     * @return DICIT_Container
+     * @return Container
      */
     public function flushRegistry() {
         $this->registry->flush();
@@ -91,7 +93,7 @@ class DICIT_Container {
             $className = $serviceConfig['class'];
         }
         else {
-            throw new RuntimeException('no class name defined for service' . serialize($serviceConfig));
+            throw new \RuntimeException('no class name defined for service' . serialize($serviceConfig));
         }
 
         if (array_key_exists('arguments', $serviceConfig)) {
@@ -105,7 +107,7 @@ class DICIT_Container {
         try {
             $instanciated = null;
 
-            $class = new ReflectionClass($className);
+            $class = new \ReflectionClass($className);
             if (count($constructorArgs) > 0) {
                 $instanciated = $class->newInstanceArgs($constructorArgs);
             }
@@ -116,7 +118,7 @@ class DICIT_Container {
             return $instanciated;
         }
         catch(Exception $e) {
-            throw new RuntimeException('Couldn\'t instanciate class ' . $className, 0, $e);
+            throw new \RuntimeException('Couldn\'t instanciate class ' . $className, 0, $e);
         }
     }
 
@@ -207,7 +209,7 @@ class DICIT_Container {
                 foreach($serviceConfig['interceptor'] as $interceptorName) {
                     $interceptor = $this->convertValue($interceptorName);
                     if (!is_object($interceptor)) {
-                        throw new RuntimeException('The interceptor ' . $interceptorName . ' does not reference a known service');
+                        throw new \RuntimeException('The interceptor ' . $interceptorName . ' does not reference a known service');
                     }
                     $interceptor->setDecorated($lastInterceptedClass);
                     $lastInterceptedClass = $interceptor;

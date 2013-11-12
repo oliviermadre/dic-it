@@ -1,20 +1,22 @@
 <?php
-class DICIT_ConfigYML extends DICIT_ConfigAbstract {
+namespace DICIT\Config;
+
+class YML extends AbstractConfig {
     protected $filePath = null;
+    protected $data = array();
 
     public function __construct($filePath) {
         $this->filePath = $filePath;
     }
 
-    public function load() {
-        $ret = $this->loadFile($this->filePath);
-        return $ret;
+    protected function doLoad() {
+        return $this->loadFile($this->filePath);
     }
 
     protected function loadFile($filePath) {
         $yml = array();
         $dirname = dirname($filePath);
-        $yaml = new Symfony\Component\Yaml\Yaml();
+        $yaml = new \Symfony\Component\Yaml\Yaml();
         $res = $yaml->parse($filePath);
 
         foreach($res as $key => $value) {
@@ -24,8 +26,8 @@ class DICIT_ConfigYML extends DICIT_ConfigAbstract {
                     $yml = array_merge_recursive($yml, $subYml);
                 }
             }
-            elseif ($key == 'classes') {
-                $yml = array_merge_recursive($yml, array('classes' => $res[$key]));
+            else {
+                $yml = array_merge_recursive($yml, array($key => $res[$key]));
             }
         }
 

@@ -1,0 +1,62 @@
+parameters :
+    env : dev
+    lang : es
+    var3 : var3bis
+
+    login_field : login
+
+    database :
+        host : 127.0.0.1
+        login : evaneos
+        pass : evaneos
+        port : 5432
+
+    dev :
+        fr :
+            var1 : value_dev_fr_1
+            var2 : value_dev_fr_2
+            var3 : value_dev_fr_3
+            var3bis : value_dev_fr_3bis
+        es :
+            var1 : value_dev_es_1
+            var2 : value_dev_es_2
+            var3 : value_dev_es_3
+            var3bis : value_dev_es_3bis
+    prod :
+        fr :
+            var1 : value_prod_fr_1
+            var2 : value_prod_fr_2
+            var3 : value_prod_fr_3
+        es :
+            var1 : value_prod_es_1
+            var2 : value_prod_es_2
+            var3 : value_prod_es_3
+
+classes :
+    Class1 :
+        instanciation :
+            class : \Class1
+            singleton : 0 # 0 DI will instantiate each time, 1 DI will fetch from Registry each time
+            builder : static::__construct # static::__construct, class::build, @class::%(expression.parameters)
+            arguments : [ 1, 2 ]
+    Class2 :
+        instanciation :
+            class : \Class2
+            arguments : [ 1, 2 ]
+        set :
+            var1 : %(%dev.fr.var1)
+            var2 : %(%dev.%env.var2)
+            var3 : %(%env.%lang.%var3)
+            var4 : %(dev.%lang.var1)
+            var5 : dev.fr.var2
+            var6 : %(dev.fr.%var3)
+        call :
+            method1 : [ 1, 2 ]
+            method2 : [ 1, 2 ]
+        decorators :
+            - @Decorator1
+
+    Decorator1 :
+        instanciation :
+            class : \Decorator1
+            arguments : [ __callee ]

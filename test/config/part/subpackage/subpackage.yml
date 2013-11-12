@@ -1,3 +1,7 @@
-classes : 
+classes :
     MySubService :
         class : AnotherClass
+
+otherKey :
+    myOtherKey :
+        john : doe
