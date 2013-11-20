@@ -14,7 +14,7 @@ class DICIT_ConfigYML extends DICIT_ConfigAbstract {
     protected function loadFile($filePath) {
         $yml = array();
         $dirname = dirname($filePath);
-        $yaml = new Symfony\Component\Yaml\Yaml();
+        $yaml = new \Symfony\Component\Yaml\Yaml();
         $res = $yaml->parse($filePath);
 
         foreach($res as $key => $value) {
@@ -24,8 +24,8 @@ class DICIT_ConfigYML extends DICIT_ConfigAbstract {
                     $yml = array_merge_recursive($yml, $subYml);
                 }
             }
-            elseif ($key == 'classes') {
-                $yml = array_merge_recursive($yml, array('classes' => $res[$key]));
+            else {
+                $yml = array_merge_recursive($yml, array($key => $res[$key]));
             }
         }
 
