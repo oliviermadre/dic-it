@@ -21,6 +21,7 @@
         }
     },
     "require" : {
-        "symfony/yaml": "2.4.*@dev"
+        "symfony/yaml": "2.4.*@dev",
+        "doctrine/annotations": "1.0.*@dev"
     }
 }
