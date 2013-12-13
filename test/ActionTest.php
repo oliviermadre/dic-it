@@ -13,4 +13,7 @@ ini_set('display_errors', 'on');
 $cfgYML = new \DICIT\Config\YML(ROOT_DIR . '/test/config/container_test.yml');
 $container = new \DICIT\Container($cfgYML);
 
+
+var_dump($container->getParameter('db.params'));
+
 var_dump($container->get('CountryService'));
