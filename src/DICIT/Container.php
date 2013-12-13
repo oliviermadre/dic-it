@@ -5,7 +5,7 @@ class Container {
     protected $config = array();
     protected $registry = null;
 
-    public function __construct(Config\Abstract $cfg) {
+    public function __construct(Config\AbstractConfig $cfg) {
         $this->registry = new Registry();
         $this->config = $cfg->load();
     }
