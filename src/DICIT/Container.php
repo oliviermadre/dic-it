@@ -1,7 +1,8 @@
 <?php
 namespace DICIT;
 
-class Container {
+class Container
+{
 
     protected $config = array();
     protected $registry = null;
@@ -50,13 +51,15 @@ class Container {
      */
     public function get($serviceName) {
         if (count($this->config) > 0) {
-            if (array_key_exists('classes', $this->config) && array_key_exists($serviceName, $this->config['classes'])) {
+            if (array_key_exists('classes', $this->config) &&
+                array_key_exists($serviceName, $this->config['classes'])) {
                 try {
                     return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
                 }
                 catch (\DICIT\UnknownDefinitionException $ex) {
                     throw new \RuntimeException(
-                        sprintf("Dependency '%s' not found while trying to build '%s'.", $ex->getServiceName(), $serviceName));
+                        sprintf("Dependency '%s' not found while trying to build '%s'.",
+                            $ex->getServiceName(), $serviceName));
                 }
             }
             else {
@@ -94,7 +97,7 @@ class Container {
         $isSingleton = false;
 
         if (array_key_exists('singleton', $serviceConfig)) {
-            $isSingleton = (bool) $serviceConfig['singleton'];
+            $isSingleton = (bool)$serviceConfig['singleton'];
         }
 
         if ($isSingleton && $this->registry->get($serviceName)) {
@@ -208,7 +211,8 @@ class Container {
                 foreach($serviceConfig['interceptor'] as $interceptorName) {
                     $interceptor = $this->convertValue($interceptorName);
                     if (!is_object($interceptor)) {
-                        throw new \RuntimeException('The interceptor ' . $interceptorName . ' does not reference a known service');
+                        throw new \RuntimeException('The interceptor ' . $interceptorName .
+                            ' does not reference a known service');
                     }
                     $interceptor->setDecorated($lastInterceptedClass);
                     $lastInterceptedClass = $interceptor;

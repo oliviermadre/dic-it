@@ -5,6 +5,7 @@ namespace DICIT;
 use DICIT\Activators\DefaultActivator;
 use DICIT\Activators\StaticInvocationActivator;
 use DICIT\Activators\InstanceInvocationActivator;
+
 class ActivatorFactory
 {
 
@@ -39,7 +40,8 @@ class ActivatorFactory
             return $this->activators['default'];
         }
 
-        throw new UnbuildableServiceException(sprintf("Unbuildable service : '%s', no suitable activator found.", $serviceName));
+        throw new UnbuildableServiceException(sprintf("Unbuildable service : '%s', no suitable activator found.",
+            $serviceName));
     }
 
     private function getBuilderType($builderKey)
@@ -53,5 +55,4 @@ class ActivatorFactory
 
         return 'null';
     }
-
 }

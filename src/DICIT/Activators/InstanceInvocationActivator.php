@@ -15,10 +15,10 @@ class InstanceInvocationActivator implements Activator
         $activationArgs = isset($serviceConfig['arguments']) ? $container->map($serviceConfig['arguments']) : array();
 
         if (! method_exists($invocationSite, $methodName)) {
-            throw new UnbuildableServiceException(sprintf("Class '%s' has no '%s' method.", $instanceName, $methodName));
+            throw new UnbuildableServiceException(
+                sprintf("Class '%s' has no '%s' method.", $instanceName, $methodName));
         }
 
         return call_user_func_array(array($invocationSite, $methodName), $activationArgs);
     }
-
 }

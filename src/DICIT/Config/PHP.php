@@ -1,7 +1,8 @@
 <?php
 namespace DICIT\Config;
 
-class PHP extends AbstractConfig {
+class PHP extends AbstractConfig
+{
     protected $filePath = null;
 
     public function __construct($filePath) {

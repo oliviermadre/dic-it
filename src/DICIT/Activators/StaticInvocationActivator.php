@@ -21,5 +21,4 @@ class StaticInvocationActivator implements Activator
 
         return call_user_func_array(array($className, $methodName), $activationArgs);
     }
-
 }
