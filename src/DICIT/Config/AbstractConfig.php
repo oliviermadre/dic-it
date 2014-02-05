@@ -1,7 +1,8 @@
 <?php
 namespace DICIT\Config;
 
-abstract class AbstractConfig {
+abstract class AbstractConfig
+{
     protected $data = array();
 
     public function load($force = false) {

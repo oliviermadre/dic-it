@@ -28,5 +28,4 @@ class DefaultActivator implements Activator
 
         return $instance;
     }
-
 }

@@ -1,7 +1,8 @@
 <?php
 namespace DICIT\Config;
 
-class YML extends AbstractConfig {
+class YML extends AbstractConfig
+{
     protected $filePath = null;
     protected $data = array();
 
