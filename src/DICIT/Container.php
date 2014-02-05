@@ -76,7 +76,7 @@ class Container
             return array();
         }
 
-        return array_map(array($this, 'convertValue'), $serviceNames);
+        return $this->convertParameters($serviceNames);
     }
 
     /**
@@ -108,7 +108,12 @@ class Container
             $this->classProps($class, $serviceConfig);
             $this->classCalls($class, $serviceConfig);
             $classEncapsulated = $this->classInterceptor($class, $serviceConfig);
-            $this->registry->set($serviceName, $classEncapsulated);
+            
+            if ($isSingleton) {
+                // Only store if singleton'ed to spare memory
+                $this->registry->set($serviceName, $classEncapsulated);
+            }
+            
             return $classEncapsulated;
         }
     }
