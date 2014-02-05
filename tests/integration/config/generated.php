@@ -1,53 +1,53 @@
 <?php $array = array (
-  'classes' => 
+  'classes' =>
   array (
-    'ExceptionInterceptor' => 
+    'ExceptionInterceptor' =>
     array (
       'class' => 'Berthe_Interceptor_Exception',
     ),
-    'PrettyExceptionInterceptor' => 
+    'PrettyExceptionInterceptor' =>
     array (
       'class' => 'PrettyExceptionInterceptor',
     ),
-    'MySubService' => 
+    'MySubService' =>
     array (
       'class' => 'AnotherClass',
     ),
-    'CountryService' => 
+    'CountryService' =>
     array (
       'class' => 'Berthe_Service_Country',
       'singleton' => true,
-      'arguments' => 
+      'arguments' =>
       array (
         0 => '@CountryManager',
         1 => 2,
       ),
-      'call' => 
+      'call' =>
       array (
-        'setManager' => 
+        'setManager' =>
         array (
           0 => '@CountryManager',
         ),
       ),
-      'interceptor' => 
+      'interceptor' =>
       array (
       ),
     ),
-    'CountryManager' => 
+    'CountryManager' =>
     array (
       'class' => 'Berthe_Modules_Country_Manager',
-      'props' => 
+      'props' =>
       array (
         'storage' => '@CountryStorage',
       ),
     ),
-    'CountryStorage' => 
+    'CountryStorage' =>
     array (
       'class' => 'Berthe_Store_Echo',
-      'interceptor' => 
+      'interceptor' =>
       array (
       ),
-      'props' => 
+      'props' =>
       array (
         'injectedVariable' => 'zomg lolilol',
       ),

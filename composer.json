@@ -23,5 +23,9 @@
     "require" : {
         "symfony/yaml": "2.5.*@dev",
         "doctrine/annotations": "1.0.*@dev"
-    }
+    },
+	"require-dev": {
+		"squizlabs/php_codesniffer": "1.5.1",
+		"league/phpunit-coverage-listener" : "~1.0"
+	}
 }

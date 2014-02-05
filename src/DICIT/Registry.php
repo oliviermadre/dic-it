@@ -1,7 +1,8 @@
 <?php
 namespace DICIT;
 
-class Registry {
+class Registry
+{
     protected $data = array();
 
     public function __construct() {
