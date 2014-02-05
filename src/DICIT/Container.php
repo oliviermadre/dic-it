@@ -48,10 +48,16 @@ class Container {
     public function get($serviceName) {
         if (count($this->config) > 0) {
             if (array_key_exists('classes', $this->config) && array_key_exists($serviceName, $this->config['classes'])) {
-                return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+                try {
+                    return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+                }
+                catch (\DICIT\UnknownDefinitionException $ex) {
+                    throw new \RuntimeException(
+                        sprintf("Dependency '%s' not found while trying to build '%s'.", $ex->getServiceName(), $serviceName));
+                }
             }
             else {
-                throw new \RuntimeException('Class not configured ' . $serviceName);
+                throw new \DICIT\UnknownDefinitionException($serviceName);
             }
         }
         else {
