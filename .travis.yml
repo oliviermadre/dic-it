@@ -13,7 +13,7 @@ before_script:
 #  - echo "extension=http.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 #  - echo "extension=memcached.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
   - composer selfupdate
-  - composer install
+  - composer install --prefer-source
   - phpenv rehash
   - wget https://scrutinizer-ci.com/ocular.phar
 
