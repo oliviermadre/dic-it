@@ -2,12 +2,15 @@
 namespace DICIT;
 
 class Container {
+
     protected $config = array();
     protected $registry = null;
+    protected $activatorFactory = null;
 
     public function __construct(Config\AbstractConfig $cfg) {
         $this->registry = new Registry();
         $this->config = $cfg->load();
+        $this->activatorFactory = new ActivatorFactory();
     }
 
     /**
@@ -48,15 +51,29 @@ class Container {
     public function get($serviceName) {
         if (count($this->config) > 0) {
             if (array_key_exists('classes', $this->config) && array_key_exists($serviceName, $this->config['classes'])) {
-                return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+                try {
+                    return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+                }
+                catch (\DICIT\UnknownDefinitionException $ex) {
+                    throw new \RuntimeException(
+                        sprintf("Dependency '%s' not found while trying to build '%s'.", $ex->getServiceName(), $serviceName));
+                }
             }
             else {
-                throw new \RuntimeException('Class not configured ' . $serviceName);
+                throw new \DICIT\UnknownDefinitionException($serviceName);
             }
         }
         else {
             throw new \RuntimeException('Container not loaded');
         }
+    }
+
+    public function map(array $serviceNames = null) {
+        if ($serviceNames === null) {
+            return array();
+        }
+
+        return array_map(array($this, 'convertValue'), $serviceNames);
     }
 
     /**
@@ -84,7 +101,7 @@ class Container {
             return $this->registry->get($serviceName);
         }
         else {
-            $class = $this->classInstanciation($serviceConfig);
+            $class = $this->classInstanciation($serviceName, $serviceConfig);
             $this->classProps($class, $serviceConfig);
             $this->classCalls($class, $serviceConfig);
             $classEncapsulated = $this->classInterceptor($class, $serviceConfig);
@@ -98,78 +115,10 @@ class Container {
      * @param  array $serviceConfig
      * @return object
      */
-    protected function classInstanciation($serviceConfig) {
-        $className = null;
-        $constructorArgs = array();
-        $isSingleton = false;
+    protected function classInstanciation($serviceName, $serviceConfig) {
+        $activator = $this->activatorFactory->getActivator($serviceName, $serviceConfig);
 
-        $builderClass = null;
-        $builderMethod = null;
-        $builderStatic = null;
-
-        if (array_key_exists('class', $serviceConfig)) {
-            $className = $serviceConfig['class'];
-        }
-        else {
-            throw new \RuntimeException('no class name defined for service' . serialize($serviceConfig));
-        }
-
-        if (array_key_exists('builder', $serviceConfig)) {
-            $builder = $serviceConfig['builder'];
-            if (strpos($builder, '::') !== false) {
-                list($builderClass, $builderMethod) = explode("::", $builder);
-                $builderStatic = true;
-            }
-            elseif (strpos($builder, '->') !== false) {
-                list($builderClass, $builderMethod) = explode("->", $builder);
-                $builderStatic = false;
-            }
-            else {
-                throw new \RuntimeException('builder malformed');
-            }
-        }
-
-        if (array_key_exists('arguments', $serviceConfig)) {
-            $arguments = $serviceConfig['arguments'];
-
-            foreach($arguments as $arg) {
-                $constructorArgs[] = $this->convertValue($arg);
-            }
-        }
-
-        try {
-            $instanciated = null;
-
-            if ($builderClass) {
-                if ($builderStatic) {
-                    if (class_exists($builderClass)) {
-                        $instanciated = call_user_func_array(array($builderClass, $builderMethod), $constructorArgs);
-                    }
-                    else {
-                        throw new \RuntimeException('Builder class doesnt exists');
-                    }
-                }
-                else {
-                    throw new \RuntimeException('Instanciated class builder not implemented');
-                }
-            }
-            else {
-                $class = new \ReflectionClass($className);
-                if (count($constructorArgs) > 0) {
-                    $instanciated = $class->newInstanceArgs($constructorArgs);
-                }
-                else {
-                    $instanciated = $class->newInstance();
-                }
-            }
-
-
-
-            return $instanciated;
-        }
-        catch(Exception $e) {
-            throw new \RuntimeException('Couldn\'t instanciate class ' . $className, 0, $e);
-        }
+        return $activator->createInstance($this, $serviceName, $serviceConfig);
     }
 
     /**
