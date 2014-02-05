@@ -73,7 +73,7 @@ class Container {
             return array();
         }
 
-        return array_map(array($this, 'convertValue'), $serviceConfig['arguments']);
+        return array_map(array($this, 'convertValue'), $serviceNames);
     }
 
     /**
