@@ -8,6 +8,7 @@ class Container
     protected $registry = null;
     protected $activatorFactory = null;
     protected $injectorFactory = null;
+    protected $encapsulatorFactory = null;
 
     public function __construct(Config\AbstractConfig $cfg,
         ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
@@ -16,6 +17,7 @@ class Container
         $this->config = $cfg->load();
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
+        $this->encapsulatorFactory = new EncapsulatorFactory();
     }
 
     /**
@@ -159,21 +161,13 @@ class Container
      * @return object
      */
     protected function encapsulate($class, $serviceConfig) {
-        $lastInterceptedClass = $class;
-        if (array_key_exists('interceptor', $serviceConfig)) {
-            if (is_array($serviceConfig)) {
-                foreach($serviceConfig['interceptor'] as $interceptorName) {
-                    $interceptor = $this->convertValue($interceptorName);
-                    if (!is_object($interceptor)) {
-                        throw new \RuntimeException('The interceptor ' . $interceptorName .
-                            ' does not reference a known service');
-                    }
-                    $interceptor->setDecorated($lastInterceptedClass);
-                    $lastInterceptedClass = $interceptor;
-                }
-            }
+        $encapsulators = $this->encapsulatorFactory->getEncapsulators();
+
+        foreach ($encapsulators as $encapsulator) {
+            $class = $encapsulator->encapsulate($this, $class, $serviceConfig);
         }
-        return $lastInterceptedClass;
+
+        return $class;
     }
 
     /**
