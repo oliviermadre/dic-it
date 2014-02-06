@@ -33,7 +33,7 @@ class RemoteAdapterFactory
             case 'rest':
                 return new RestAdapter(new \Guzzle\Http\Client($endpoint));
             default:
-                throw new UnknownProtocolException(sprintf("Protocol '%s' is not supported "));
+                throw new UnknownProtocolException(sprintf("Protocol '%s' is not supported ", $protocol));
         }
     }
 }
