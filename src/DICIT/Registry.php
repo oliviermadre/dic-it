@@ -14,6 +14,9 @@ class Registry
         return $this;
     }
 
+    /**
+     * @param string $key
+     */
     public function get($key, $throwIfNotFound = false) {
         if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
@@ -26,6 +29,9 @@ class Registry
         }
     }
 
+    /**
+     * @param string $key
+     */
     public function set($key, $value) {
         $this->data[$key] = $value;
         return $this;

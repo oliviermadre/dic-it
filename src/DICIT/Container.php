@@ -3,19 +3,60 @@ namespace DICIT;
 
 class Container
 {
-
+    /**
+     *
+     * @var mixed[]
+     */
     protected $config = array();
+
+    /**
+     *
+     * @var \DICIT\ArrayResolver
+     */
+    protected $parameters;
+
+    /**
+     *
+     * @var \DICIT\Registry
+     */
     protected $registry = null;
+
+    /**
+     *
+     * @var \DICIT\ActivatorFactory
+     */
     protected $activatorFactory = null;
+
+    /**
+     *
+     * @var \DICIT\InjectorFactory
+     */
     protected $injectorFactory = null;
 
+    /**
+     *
+     * @var \DICIT\EncapsulatorFactory
+     */
+    protected $encapsulatorFactory = null;
+
+    /**
+     *
+     * @param Config\AbstractConfig $cfg
+     * @param ActivatorFactory $activatorFactory
+     * @param InjectorFactory $injectorFactory
+     */
     public function __construct(Config\AbstractConfig $cfg,
         ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
     {
         $this->registry = new Registry();
         $this->config = $cfg->load();
+        $this->parameters = new ArrayResolver(isset($this->config['parameters']) ? $this->config['parameters'] : null);
+
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
+        $this->encapsulatorFactory = new EncapsulatorFactory();
+
+
     }
 
     /**
@@ -24,28 +65,7 @@ class Container
      * @return mixed
      */
     public function getParameter($parameterName) {
-        $toReturn = null;
-        if (array_key_exists('parameters', $this->config)) {
-            $dotted = explode(".", $parameterName);
-
-            if (count($dotted) > 1) {
-                $currentDepthData = $this->config['parameters'];
-                foreach($dotted as $paramKey) {
-                    if (array_key_exists($paramKey, $currentDepthData)) {
-                        $currentDepthData = $currentDepthData[$paramKey];
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                return $currentDepthData;
-            }
-            elseif (array_key_exists($parameterName, $this->config['parameters'])) {
-                $toReturn = $this->config['parameters'][$parameterName];
-            }
-        }
-
-        return $toReturn;
+        return $this->parameters->resolve($parameterName);
     }
 
     /**
@@ -99,6 +119,7 @@ class Container
     /**
      * Chain of command of the class loader
      * @param  array $serviceConfig
+     * @param string $serviceName
      * @return object
      */
     protected function loadService($serviceName, $serviceConfig) {
@@ -113,13 +134,14 @@ class Container
         }
         else {
             $class = $this->activate($serviceName, $serviceConfig);
-            $this->inject($class, $serviceConfig);
-            $class = $this->encapsulate($class, $serviceConfig);
 
             if ($isSingleton) {
                 // Only store if singleton'ed to spare memory
                 $this->registry->set($serviceName, $class);
             }
+
+            $this->inject($class, $serviceConfig);
+            $class = $this->encapsulate($class, $serviceConfig);
 
             return $class;
         }
@@ -128,6 +150,7 @@ class Container
     /**
      * Handles class instanciation
      * @param  array $serviceConfig
+     * @param string $serviceName
      * @return object
      */
     protected function activate($serviceName, $serviceConfig) {
@@ -159,21 +182,13 @@ class Container
      * @return object
      */
     protected function encapsulate($class, $serviceConfig) {
-        $lastInterceptedClass = $class;
-        if (array_key_exists('interceptor', $serviceConfig)) {
-            if (is_array($serviceConfig)) {
-                foreach($serviceConfig['interceptor'] as $interceptorName) {
-                    $interceptor = $this->convertValue($interceptorName);
-                    if (!is_object($interceptor)) {
-                        throw new \RuntimeException('The interceptor ' . $interceptorName .
-                            ' does not reference a known service');
-                    }
-                    $interceptor->setDecorated($lastInterceptedClass);
-                    $lastInterceptedClass = $interceptor;
-                }
-            }
+        $encapsulators = $this->encapsulatorFactory->getEncapsulators();
+
+        foreach ($encapsulators as $encapsulator) {
+            $class = $encapsulator->encapsulate($this, $class, $serviceConfig);
         }
-        return $lastInterceptedClass;
+
+        return $class;
     }
 
     /**
@@ -182,8 +197,8 @@ class Container
      * @return mixed
      */
     protected function convertValue($value) {
-        $toReturn = null;
         $prefix = substr($value, 0, 1);
+
         switch($prefix) {
             case '@' :
                 $toReturn = $this->get(substr($value, 1));
