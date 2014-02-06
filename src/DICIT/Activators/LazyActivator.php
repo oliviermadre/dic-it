@@ -16,8 +16,12 @@ class LazyActivator implements Activator
 
     public function createInstance(Container $container, $serviceName, array $serviceConfig)
     {
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
+        if (! isset($serviceConfig['lazy']) || ! $serviceConfig['lazy']) {
+            return $this->activator->createInstance($container, $serviceName, $serviceConfig);
+        }
+
         $activator = $this->activator;
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
 
         $proxy = $factory->createProxy($serviceConfig['class'],
             function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) use ($activator, $container,
