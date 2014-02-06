@@ -17,6 +17,12 @@ class Container
 
     /**
      *
+     * @var \DICIT\ArrayResolver
+     */
+    protected $classes;
+
+    /**
+     *
      * @var \DICIT\Registry
      */
     protected $registry = null;
@@ -50,13 +56,13 @@ class Container
     {
         $this->registry = new Registry();
         $this->config = $cfg->load();
+
         $this->parameters = new ArrayResolver(isset($this->config['parameters']) ? $this->config['parameters'] : null);
+        $this->classes = new ArrayResolver(isset($this->config['classes']) ? $this->config['classes'] : null);
 
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
-
-
     }
 
     /**
@@ -74,24 +80,19 @@ class Container
      * @return object
      */
     public function get($serviceName) {
-        if (count($this->config) > 0) {
-            if (array_key_exists('classes', $this->config) &&
-                array_key_exists($serviceName, $this->config['classes'])) {
-                try {
-                    return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
-                }
-                catch (\DICIT\UnknownDefinitionException $ex) {
-                    throw new \RuntimeException(
-                        sprintf("Dependency '%s' not found while trying to build '%s'.",
-                            $ex->getServiceName(), $serviceName));
-                }
-            }
-            else {
-                throw new \DICIT\UnknownDefinitionException($serviceName);
-            }
+        $serviceConfig = $this->classes->resolve($serviceName, null);
+
+        if ($serviceConfig == null) {
+            throw new \DICIT\UnknownDefinitionException($serviceName);
         }
-        else {
-            throw new \RuntimeException('Container not loaded');
+
+        try {
+            return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+        }
+        catch (\DICIT\UnknownDefinitionException $ex) {
+            throw new \RuntimeException(
+                sprintf("Dependency '%s' not found while trying to build '%s'.",
+                    $ex->getServiceName(), $serviceName));
         }
     }
 
