@@ -15,6 +15,10 @@ class ArrayResolver
         $this->source = $source;
     }
 
+    /**
+     * @param string $key
+     * @param string $default
+     */
     public function resolve($key, $default = null)
     {
         $toReturn = $default;
