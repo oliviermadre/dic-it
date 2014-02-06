@@ -5,5 +5,5 @@ namespace DICIT;
 interface Encapsulator
 {
 
-    function encapsulate(Container $container, $object, array $serviceConfig);
+    public function encapsulate(Container $container, $object, array $serviceConfig);
 }
