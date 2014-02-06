@@ -12,10 +12,19 @@ class ActivatorFactory
 
     private $activators = array();
 
-    public function __construct() {
-        $this->activators['default'] = new LazyActivator(new DefaultActivator());
-        $this->activators['builder-static'] = new LazyActivator(new StaticInvocationActivator());
-        $this->activators['builder'] = new LazyActivator(new InstanceInvocationActivator());
+    public function __construct($deferActivations = false) {
+        $this->addActivator('default', new DefaultActivator(), $deferActivations);
+        $this->addActivator('builder-static', new StaticInvocationActivator(), $deferActivations);
+        $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
+    }
+
+    private function addActivator($key, Activator $activator, $deferredActivations)
+    {
+        if ($deferredActivations) {
+            $activator = new LazyActivator($activator);
+        }
+
+        $this->activators[$key] = $activator;
     }
 
     /**

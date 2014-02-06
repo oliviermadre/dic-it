@@ -3,6 +3,7 @@
 namespace DICIT\Tests;
 
 use DICIT\Container;
+use DICIT\ActivatorFactory;
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -39,25 +40,25 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', $first, ! $first)));
 
-        $container = new Container($config);
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $container->get('cyclic');
     }
 
     public function testCyclicDependenciesDoNotOverflowWithTwoSingletonsInCycle()
     {
-        //$this->markTestSkipped('Not implemented yet.');
-
         $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
-        ->disableOriginalConstructor()
-        ->setMethods(array('load', 'getData'))
-        ->getMockForAbstractClass();
+            ->disableOriginalConstructor()
+            ->setMethods(array('load', 'getData'))
+            ->getMockForAbstractClass();
 
         $config->expects($this->any())
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', true, true)));
 
-        $container = new Container($config);
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $container->get('cyclic');
     }
