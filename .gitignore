@@ -39,7 +39,7 @@ Thumbs.db
 # vendor & other #
 ##################
 vendor
-composer.lock
+#composer.lock
 tests/output
 .buildpath
 .settings/
