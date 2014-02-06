@@ -12,7 +12,7 @@ class InstanceInvocationActivator implements Activator
         list($instanceName, $methodName) = explode('->', $serviceConfig['builder']);
 
         $invocationSite = $container->get($instanceName);
-        $activationArgs = isset($serviceConfig['arguments']) ? $container->map($serviceConfig['arguments']) : array();
+        $activationArgs = isset($serviceConfig['arguments']) ? $container->resolveMany($serviceConfig['arguments']) : array();
 
         if (! method_exists($invocationSite, $methodName)) {
             throw new UnbuildableServiceException(

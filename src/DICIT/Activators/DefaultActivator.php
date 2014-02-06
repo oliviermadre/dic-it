@@ -17,7 +17,8 @@ class DefaultActivator implements Activator
         }
 
         $class = new \ReflectionClass($className);
-        $activationArgs = isset($serviceConfig['arguments']) ? $container->map($serviceConfig['arguments']) : array();
+        $activationArgs = isset($serviceConfig['arguments']) ? 
+            $container->resolveMany($serviceConfig['arguments']) : array();
 
         if (! empty($activationArgs)) {
             $instance = $class->newInstanceArgs($activationArgs);
