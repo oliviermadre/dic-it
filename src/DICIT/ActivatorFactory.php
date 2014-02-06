@@ -5,6 +5,7 @@ namespace DICIT;
 use DICIT\Activators\DefaultActivator;
 use DICIT\Activators\StaticInvocationActivator;
 use DICIT\Activators\InstanceInvocationActivator;
+use DICIT\Activators\LazyActivator;
 
 class ActivatorFactory
 {
@@ -12,9 +13,9 @@ class ActivatorFactory
     private $activators = array();
 
     public function __construct() {
-        $this->activators['default'] = new DefaultActivator();
-        $this->activators['builder-static'] = new StaticInvocationActivator();
-        $this->activators['builder'] = new InstanceInvocationActivator();
+        $this->activators['default'] = new LazyActivator(new DefaultActivator());
+        $this->activators['builder-static'] = new LazyActivator(new StaticInvocationActivator());
+        $this->activators['builder'] = new LazyActivator(new InstanceInvocationActivator());
     }
 
     /**

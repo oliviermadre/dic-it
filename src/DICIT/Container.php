@@ -115,13 +115,14 @@ class Container
         }
         else {
             $class = $this->activate($serviceName, $serviceConfig);
-            $this->inject($class, $serviceConfig);
-            $class = $this->encapsulate($class, $serviceConfig);
 
             if ($isSingleton) {
                 // Only store if singleton'ed to spare memory
                 $this->registry->set($serviceName, $class);
             }
+
+            $this->inject($class, $serviceConfig);
+            $class = $this->encapsulate($class, $serviceConfig);
 
             return $class;
         }
