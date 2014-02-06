@@ -1,7 +1,6 @@
 <?php
 namespace DICIT;
 
-use DICIT\Activators\DeferredObject;
 class Container
 {
 
@@ -10,8 +9,8 @@ class Container
     protected $activatorFactory = null;
     protected $injectorFactory = null;
 
-    public function __construct(Config\AbstractConfig $cfg, 
-        ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null) 
+    public function __construct(Config\AbstractConfig $cfg,
+        ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
     {
         $this->registry = new Registry();
         $this->config = $cfg->load();
@@ -79,7 +78,7 @@ class Container
     public function resolve($reference) {
         return $this->convertValue($reference);
     }
-    
+
     public function resolveMany(array $references = null) {
         if ($references === null) {
             return array();
@@ -116,12 +115,12 @@ class Container
             $class = $this->activate($serviceName, $serviceConfig);
             $this->inject($class, $serviceConfig);
             $class = $this->encapsulate($class, $serviceConfig);
-            
+
             if ($isSingleton) {
                 // Only store if singleton'ed to spare memory
                 $this->registry->set($serviceName, $class);
             }
-            
+
             return $class;
         }
     }
@@ -145,14 +144,14 @@ class Container
      */
     protected function inject($class, $serviceConfig) {
         $injectors = $this->injectorFactory->getInjectors();
-        
+
         foreach ($injectors as $injector) {
             $injector->inject($this, $class, $serviceConfig);
         }
-        
+
         return true;
     }
-    
+
     /**
      * Interceptor handler
      * @param  object $class

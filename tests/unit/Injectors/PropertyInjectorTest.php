@@ -14,16 +14,16 @@ class PropertyInjectorTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->setMethods(array('resolve'))
             ->getMock();
-        
+
         $container->expects($this->once())
             ->method('resolve')
             ->will($this->returnValue(2));
-        
+
         $injector = new PropertyInjector();
         $serviceConfig = array('props' => array('property' => array('value')));
-        
+
         $injector->inject($container, $mock, $serviceConfig);
-        
+
         $this->equalTo(2, $mock->property);
     }
 }

@@ -21,7 +21,7 @@ class DefaultInvocationActivatorTest extends \PHPUnit_Framework_TestCase
     public function testActicationFailsWithMissingClass()
     {
         $activator = new DefaultActivator();
-        
+
         $instance = $activator->createInstance($this->container, 'dependency', array(
             'class' => '\DICIT\UnpossiblyFindableClass'
         ));
@@ -30,11 +30,11 @@ class DefaultInvocationActivatorTest extends \PHPUnit_Framework_TestCase
     public function testActivationSucceedsWithNoArgs()
     {
         $activator = new DefaultActivator();
-        
+
         $instance = $activator->createInstance($this->container, 'dependency', array(
             'class' => '\stdClass'
         ));
-        
+
         $this->assertNotNull($instance);
         $this->assertInstanceOf('\stdClass', $instance);
     }
@@ -44,16 +44,16 @@ class DefaultInvocationActivatorTest extends \PHPUnit_Framework_TestCase
         $this->container->expects($this->once())
             ->method('resolveMany')
             ->will($this->returnArgument(0));
-        
+
         $activator = new DefaultActivator();
-        
+
         $instance = $activator->createInstance($this->container, 'dependency', array(
             'class' => '\DICIT\Tests\Activators\TestConstructorInjectable',
             'arguments' => array(
                 2
             )
         ));
-        
+
         $this->assertNotNull($instance);
         $this->assertInstanceOf('\DICIT\Tests\Activators\TestConstructorInjectable', $instance);
     }
