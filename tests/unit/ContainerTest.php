@@ -7,6 +7,9 @@ use DICIT\ActivatorFactory;
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @param string $name
+     */
     private function getCyclicDependencies($name, $singletonForFirst = false, $singletonForOther = false)
     {
         $first = array(
