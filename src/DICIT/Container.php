@@ -1,17 +1,22 @@
 <?php
 namespace DICIT;
 
+use DICIT\Activators\DeferredObject;
 class Container
 {
 
     protected $config = array();
     protected $registry = null;
     protected $activatorFactory = null;
+    protected $injectorFactory = null;
 
-    public function __construct(Config\AbstractConfig $cfg) {
+    public function __construct(Config\AbstractConfig $cfg, 
+        ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null) 
+    {
         $this->registry = new Registry();
         $this->config = $cfg->load();
-        $this->activatorFactory = new ActivatorFactory();
+        $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
+        $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
     }
 
     /**
@@ -71,12 +76,16 @@ class Container
         }
     }
 
-    public function map(array $serviceNames = null) {
-        if ($serviceNames === null) {
+    public function resolve($reference) {
+        return $this->convertValue($reference);
+    }
+    
+    public function resolveMany(array $references = null) {
+        if ($references === null) {
             return array();
         }
 
-        return $this->convertParameters($serviceNames);
+        return $this->convertParameters($references);
     }
 
     /**
@@ -104,17 +113,16 @@ class Container
             return $this->registry->get($serviceName);
         }
         else {
-            $class = $this->classInstanciation($serviceName, $serviceConfig);
-            $this->classProps($class, $serviceConfig);
-            $this->classCalls($class, $serviceConfig);
-            $classEncapsulated = $this->classInterceptor($class, $serviceConfig);
+            $class = $this->activate($serviceName, $serviceConfig);
+            $this->inject($class, $serviceConfig);
+            $class = $this->encapsulate($class, $serviceConfig);
             
             if ($isSingleton) {
                 // Only store if singleton'ed to spare memory
-                $this->registry->set($serviceName, $classEncapsulated);
+                $this->registry->set($serviceName, $class);
             }
             
-            return $classEncapsulated;
+            return $class;
         }
     }
 
@@ -123,7 +131,7 @@ class Container
      * @param  array $serviceConfig
      * @return object
      */
-    protected function classInstanciation($serviceName, $serviceConfig) {
+    protected function activate($serviceName, $serviceConfig) {
         $activator = $this->activatorFactory->getActivator($serviceName, $serviceConfig);
 
         return $activator->createInstance($this, $serviceName, $serviceConfig);
@@ -135,36 +143,38 @@ class Container
      * @param  array $serviceConfig
      * @return boolean
      */
-    protected function classCalls($class, $serviceConfig) {
-        $callConfig = array();
-        if (array_key_exists('call', $serviceConfig)) {
-            $callConfig = $serviceConfig['call'];
+    protected function inject($class, $serviceConfig) {
+        $injectors = $this->injectorFactory->getInjectors();
+        
+        foreach ($injectors as $injector) {
+            $injector->inject($this, $class, $serviceConfig);
         }
-        foreach($callConfig as $methodName => $parameters) {
-            $convertedParameters = $this->convertParameters($parameters);
-            call_user_func_array(array($class, $methodName), $convertedParameters);
-        }
-
+        
         return true;
     }
-
+    
     /**
-     * Handle properties in the class
+     * Interceptor handler
      * @param  object $class
      * @param  array $serviceConfig
-     * @return boolean
+     * @return object
      */
-    protected function classProps($class, $serviceConfig) {
-        $propConfig = array();
-        if (array_key_exists('props', $serviceConfig)) {
-            $propConfig = $serviceConfig['props'];
+    protected function encapsulate($class, $serviceConfig) {
+        $lastInterceptedClass = $class;
+        if (array_key_exists('interceptor', $serviceConfig)) {
+            if (is_array($serviceConfig)) {
+                foreach($serviceConfig['interceptor'] as $interceptorName) {
+                    $interceptor = $this->convertValue($interceptorName);
+                    if (!is_object($interceptor)) {
+                        throw new \RuntimeException('The interceptor ' . $interceptorName .
+                            ' does not reference a known service');
+                    }
+                    $interceptor->setDecorated($lastInterceptedClass);
+                    $lastInterceptedClass = $interceptor;
+                }
+            }
         }
-        foreach($propConfig as $propName => $propValue) {
-            $convertedValue = $this->convertValue($propValue);
-            $class->$propName = $convertedValue;
-        }
-
-        return true;
+        return $lastInterceptedClass;
     }
 
     /**
@@ -201,29 +211,5 @@ class Container
             $convertedParameters[] = $convertedValue;
         }
         return $convertedParameters;
-    }
-
-    /**
-     * Interceptor handler
-     * @param  object $class
-     * @param  array $serviceConfig
-     * @return object
-     */
-    protected function classInterceptor($class, $serviceConfig) {
-        $lastInterceptedClass = $class;
-        if (array_key_exists('interceptor', $serviceConfig)) {
-            if (is_array($serviceConfig)) {
-                foreach($serviceConfig['interceptor'] as $interceptorName) {
-                    $interceptor = $this->convertValue($interceptorName);
-                    if (!is_object($interceptor)) {
-                        throw new \RuntimeException('The interceptor ' . $interceptorName .
-                            ' does not reference a known service');
-                    }
-                    $interceptor->setDecorated($lastInterceptedClass);
-                    $lastInterceptedClass = $interceptor;
-                }
-            }
-        }
-        return $lastInterceptedClass;
     }
 }
