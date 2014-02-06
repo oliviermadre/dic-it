@@ -41,3 +41,6 @@ Thumbs.db
 vendor
 composer.lock
 tests/output
+.buildpath
+.settings/
+.project

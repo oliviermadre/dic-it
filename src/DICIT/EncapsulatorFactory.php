@@ -3,6 +3,7 @@
 namespace DICIT;
 
 use DICIT\Encapsulators\InterceptorEncapsulator;
+
 class EncapsulatorFactory
 {
 
@@ -22,5 +23,4 @@ class EncapsulatorFactory
     {
         return $this->encapsulators;
     }
-
 }
