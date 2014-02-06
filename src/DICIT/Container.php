@@ -101,6 +101,7 @@ class Container
     /**
      * Chain of command of the class loader
      * @param  array $serviceConfig
+     * @param string $serviceName
      * @return object
      */
     protected function loadService($serviceName, $serviceConfig) {

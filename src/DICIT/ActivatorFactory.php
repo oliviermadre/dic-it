@@ -18,6 +18,10 @@ class ActivatorFactory
         $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
     }
 
+    /**
+     * @param string $key
+     * @param boolean $deferredActivations
+     */
     private function addActivator($key, Activator $activator, $deferredActivations)
     {
         if ($deferredActivations) {
