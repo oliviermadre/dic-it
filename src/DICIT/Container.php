@@ -150,6 +150,7 @@ class Container
     /**
      * Handles class instanciation
      * @param  array $serviceConfig
+     * @param string $serviceName
      * @return object
      */
     protected function activate($serviceName, $serviceConfig) {
