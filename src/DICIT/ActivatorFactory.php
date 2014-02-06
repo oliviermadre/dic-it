@@ -33,7 +33,7 @@ class ActivatorFactory
 
     /**
      *
-     * @param unknown $serviceName
+     * @param string $serviceName
      * @param unknown $configuration
      * @throws UnbuildableServiceException
      * @return \DICIT\Activator
