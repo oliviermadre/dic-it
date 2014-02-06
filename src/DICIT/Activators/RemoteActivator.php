@@ -25,7 +25,7 @@ class RemoteActivator implements Activator
         $className = $serviceConfig['class'];
         $remoteConfig = $serviceConfig['remote'];
 
-        $adapter = $this->adapterFactory->getAdapter($serviceName, $serviceConfig['remote']);
+        $adapter = $this->adapterFactory->getAdapter($serviceName, $remoteConfig);
         $factory = new \ProxyManager\Factory\RemoteObjectFactory($adapter);
 
         return $factory->createProxy($className);

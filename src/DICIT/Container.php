@@ -3,21 +3,60 @@ namespace DICIT;
 
 class Container
 {
-
+    /**
+     *
+     * @var mixed[]
+     */
     protected $config = array();
+
+    /**
+     *
+     * @var \DICIT\ArrayResolver
+     */
+    protected $parameters;
+
+    /**
+     *
+     * @var \DICIT\Registry
+     */
     protected $registry = null;
+
+    /**
+     *
+     * @var \DICIT\ActivatorFactory
+     */
     protected $activatorFactory = null;
+
+    /**
+     *
+     * @var \DICIT\InjectorFactory
+     */
     protected $injectorFactory = null;
+
+    /**
+     *
+     * @var \DICIT\EncapsulatorFactory
+     */
     protected $encapsulatorFactory = null;
 
+    /**
+     *
+     * @param Config\AbstractConfig $cfg
+     * @param ActivatorFactory $activatorFactory
+     * @param InjectorFactory $injectorFactory
+     */
     public function __construct(Config\AbstractConfig $cfg,
         ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
     {
         $this->registry = new Registry();
         $this->config = $cfg->load();
+        $this->parameters = new ArrayResolver(isset($this->config['parameters']) ? $this->config['parameters'] : null);
+
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
+
+
     }
 
     /**
@@ -26,28 +65,7 @@ class Container
      * @return mixed
      */
     public function getParameter($parameterName) {
-        $toReturn = null;
-        if (array_key_exists('parameters', $this->config)) {
-            $dotted = explode(".", $parameterName);
-
-            if (count($dotted) > 1) {
-                $currentDepthData = $this->config['parameters'];
-                foreach($dotted as $paramKey) {
-                    if (array_key_exists($paramKey, $currentDepthData)) {
-                        $currentDepthData = $currentDepthData[$paramKey];
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                return $currentDepthData;
-            }
-            elseif (array_key_exists($parameterName, $this->config['parameters'])) {
-                $toReturn = $this->config['parameters'][$parameterName];
-            }
-        }
-
-        return $toReturn;
+        return $this->parameters->resolve($parameterName);
     }
 
     /**
@@ -178,8 +196,8 @@ class Container
      * @return mixed
      */
     protected function convertValue($value) {
-        $toReturn = null;
         $prefix = substr($value, 0, 1);
+
         switch($prefix) {
             case '@' :
                 $toReturn = $this->get(substr($value, 1));

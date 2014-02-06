@@ -11,7 +11,7 @@ class RestAdapter implements AdapterInterface
      *
      * @var \Guzzle\Http\ClientInterface
      */
-    private $restClient;
+    private $client;
 
     public function __construct(\Guzzle\Http\ClientInterface $client)
     {
