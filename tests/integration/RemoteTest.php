@@ -10,12 +10,20 @@ require ROOT_DIR . '/tests/integration/fixture/all.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 'on');
 
+interface FooServiceInterface
+{
+    /**
+     *
+     * @param string $param
+     * @param string $p2
+     * @return string
+     */
+    public function foo($param, $p2);
+}
+
 // Getting config using YML
-$cfgYML = new \DICIT\Config\YML(ROOT_DIR . '/tests/integration/config/container_test.yml');
+$cfgYML = new \DICIT\Config\YML(ROOT_DIR . '/tests/integration/config/remote_test.yml');
 $container = new \DICIT\Container($cfgYML);
 
-var_dump($container->getParameter('db.params'));
-var_dump($container->get('CountryService'));
-
 $service = $container->get('RemoteService');
-$service->setPaymentDone(1254);
+echo $service->foo('js is crap', 'real crap');
