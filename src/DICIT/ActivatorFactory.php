@@ -5,21 +5,35 @@ namespace DICIT;
 use DICIT\Activators\DefaultActivator;
 use DICIT\Activators\StaticInvocationActivator;
 use DICIT\Activators\InstanceInvocationActivator;
+use DICIT\Activators\LazyActivator;
 
 class ActivatorFactory
 {
 
     private $activators = array();
 
-    public function __construct() {
-        $this->activators['default'] = new DefaultActivator();
-        $this->activators['builder-static'] = new StaticInvocationActivator();
-        $this->activators['builder'] = new InstanceInvocationActivator();
+    public function __construct($deferActivations = false) {
+        $this->addActivator('default', new DefaultActivator(), $deferActivations);
+        $this->addActivator('builder-static', new StaticInvocationActivator(), $deferActivations);
+        $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
+    }
+
+    /**
+     * @param string $key
+     * @param boolean $deferredActivations
+     */
+    private function addActivator($key, Activator $activator, $deferredActivations)
+    {
+        if ($deferredActivations) {
+            $activator = new LazyActivator($activator);
+        }
+
+        $this->activators[$key] = $activator;
     }
 
     /**
      *
-     * @param unknown $serviceName
+     * @param string $serviceName
      * @param unknown $configuration
      * @throws UnbuildableServiceException
      * @return \DICIT\Activator

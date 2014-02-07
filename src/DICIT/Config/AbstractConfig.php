@@ -6,16 +6,11 @@ abstract class AbstractConfig
     protected $data = array();
 
     public function load($force = false) {
-        if ($force) {
-            $ret = $this->doLoad();
-            $this->data = $ret;
-        }
-        elseif (!$force && count($this->data) === 0) {
-            $ret = $this->doLoad();
-            $this->data = $ret;
+        if ($force || empty($this->data)) {
+            $this->data = $this->doLoad();
         }
 
-        return $ret;
+        return $this->data;
     }
 
     public function getData() {
