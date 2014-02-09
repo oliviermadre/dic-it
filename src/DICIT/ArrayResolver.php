@@ -84,6 +84,6 @@ class ArrayResolver implements \Iterator
     {
         $key = key($this->source);
 
-        return ($key !== NULL && $key !== FALSE);
+        return ($key !== null && $key !== false);
     }
 }

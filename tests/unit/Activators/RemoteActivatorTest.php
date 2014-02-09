@@ -43,7 +43,7 @@ class RemoteActivatorTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $serviceConfig = array(
-        	'class' => '\stdClass',
+            'class' => '\stdClass',
             'remote' => array('endpoint' => 'http://localhost:80', 'protocol' => 'rest')
         );
 

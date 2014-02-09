@@ -4,7 +4,7 @@ namespace FooSpace;
 
 interface FooInterface
 {
-    function foo($param);
+    public function foo($param);
 }
 
 class Foo implements FooInterface
