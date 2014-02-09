@@ -21,15 +21,15 @@ class ReferenceResolver
         $prefix = substr($reference, 0, 1);
 
         switch ($prefix) {
-        	case '@' :
-        	    $toReturn = $this->container->get(substr($reference, 1));
-        	    break;
-        	case '%' :
-        	    $toReturn = $this->container->getParameter(substr($reference, 1));
-        	    break;
-        	default :
-        	    $toReturn = $reference;
-        	    break;
+            case '@' :
+                $toReturn = $this->container->get(substr($reference, 1));
+                break;
+            case '%' :
+                $toReturn = $this->container->getParameter(substr($reference, 1));
+                break;
+            default :
+                $toReturn = $reference;
+                break;
         }
 
         return $toReturn;

@@ -30,7 +30,7 @@ class RemoteAdapterFactoryTest extends \PHPUnit_Framework_TestCase
     public function getExpectedClassNamesByProtocol()
     {
         return array(
-        	array('\ProxyManager\Factory\RemoteObject\Adapter\XmlRpc', array('protocol' => 'xml-rpc', 'endpoint' => 'localhost')),
+            array('\ProxyManager\Factory\RemoteObject\Adapter\XmlRpc', array('protocol' => 'xml-rpc', 'endpoint' => 'localhost')),
             array('\ProxyManager\Factory\RemoteObject\Adapter\JsonRpc', array('protocol' => 'json-rpc', 'endpoint' => 'localhost')),
             array('\ProxyManager\Factory\RemoteObject\Adapter\Soap', array('protocol' => 'soap', 'endpoint' => 'localhost')),
             array('\DICIT\Activators\Remote\RestAdapter', array('protocol' => 'rest', 'endpoint' => 'localhost'))

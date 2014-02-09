@@ -84,7 +84,7 @@ class ArrayResolver implements \Iterator, \Countable
     {
         $key = key($this->source);
 
-        return ($key !== NULL && $key !== FALSE);
+        return ($key !== null && $key !== false);
     }
 
     public function count()
