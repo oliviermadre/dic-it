@@ -44,4 +44,14 @@ class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\DICIT\Activators\InstanceInvocationActivator',
             $factory->getActivator('myService', $serviceConfig));
     }
+
+    public function testGetActivatorWithRemoteConfigReturnsRemoteActivator()
+    {
+        $serviceConfig = array('class' => '\DummyClass', 'remote' => array());
+
+        $factory = new ActivatorFactory();
+
+        $this->assertInstanceOf('\DICIT\Activators\RemoteActivator',
+            $factory->getActivator('myService', $serviceConfig));
+    }
 }

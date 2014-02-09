@@ -6,6 +6,8 @@ use DICIT\Activators\DefaultActivator;
 use DICIT\Activators\StaticInvocationActivator;
 use DICIT\Activators\InstanceInvocationActivator;
 use DICIT\Activators\LazyActivator;
+use DICIT\Activators\RemoteActivator;
+use DICIT\Activators\RemoteAdapterFactory;
 
 class ActivatorFactory
 {
@@ -16,6 +18,7 @@ class ActivatorFactory
         $this->addActivator('default', new DefaultActivator(), $deferActivations);
         $this->addActivator('builder-static', new StaticInvocationActivator(), $deferActivations);
         $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
+        $this->addActivator('remote', new RemoteActivator(new RemoteAdapterFactory()), $deferActivations);
     }
 
     /**
@@ -34,11 +37,11 @@ class ActivatorFactory
     /**
      *
      * @param string $serviceName
-     * @param unknown $configuration
+     * @param array $configuration
      * @throws UnbuildableServiceException
      * @return \DICIT\Activator
      */
-    public function getActivator($serviceName, $configuration)
+    public function getActivator($serviceName, array $configuration)
     {
         if (array_key_exists('builder', $configuration)) {
             $builderType = $this->getBuilderType($configuration['builder']);
@@ -49,8 +52,12 @@ class ActivatorFactory
             elseif ('instance' == $builderType) {
                 return $this->activators['builder'];
             }
+        }
+        elseif (array_key_exists('class', $configuration)) {
+            if (array_key_exists('remote', $configuration)) {
+                return $this->activators['remote'];
+            }
 
-        } elseif (array_key_exists('class', $configuration)) {
             return $this->activators['default'];
         }
 
