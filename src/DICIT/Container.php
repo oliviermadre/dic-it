@@ -71,7 +71,13 @@ class Container
      * @return mixed
      */
     public function getParameter($parameterName) {
-        return $this->parameters->resolve($parameterName);
+        $value = $this->parameters->resolve($parameterName);
+
+        if ($value instanceof ArrayResolver) {
+            return $value->extract();
+        }
+
+        return $value;
     }
 
     /**

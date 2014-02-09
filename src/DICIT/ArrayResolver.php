@@ -15,6 +15,11 @@ class ArrayResolver
         $this->source = $source;
     }
 
+    public function extract()
+    {
+        return $this->source;
+    }
+
     /**
      * @param string $key
      * @param string $default
