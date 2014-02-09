@@ -1,7 +1,7 @@
 <?php
 namespace DICIT;
 
-class ArrayResolver
+class ArrayResolver implements \Iterator
 {
 
     private $source;
@@ -15,7 +15,13 @@ class ArrayResolver
         $this->source = $source;
     }
 
+    public function extract()
+    {
+        return $this->source;
+    }
+
     /**
+     *
      * @param string $key
      * @param string $default
      */
@@ -45,11 +51,39 @@ class ArrayResolver
         return $this->wrapIfNecessary($toReturn);
     }
 
-    private function wrapIfNecessary($value) {
+    private function wrapIfNecessary($value)
+    {
         if (is_array($value)) {
             return new static($value);
         }
 
         return $value;
+    }
+
+    public function rewind()
+    {
+        reset($this->source);
+    }
+
+    public function current()
+    {
+        return $this->wrapIfNecessary(current($this->source));
+    }
+
+    public function key()
+    {
+        return key($this->source);
+    }
+
+    public function next()
+    {
+        return next($this->source);
+    }
+
+    public function valid()
+    {
+        $key = key($this->source);
+
+        return ($key !== NULL && $key !== FALSE);
     }
 }
