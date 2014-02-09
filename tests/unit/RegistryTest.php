@@ -10,8 +10,9 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     public function testFlushClearsRegistry()
     {
         $registry = new Registry();
+        $value = 'value';
 
-        $registry->set('key', 'value');
+        $registry->set('key', $value);
         $registry->flush();
 
         $this->assertNull($registry->get('key', false));
@@ -37,10 +38,11 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     public function testGetReturnsSetValue()
     {
         $registry = new Registry();
+        $value = 'myValue';
 
-        $registry->set('key', 'myValue');
+        $registry->set('key', $value);
 
-        $this->assertEquals('myValue', $registry->get('key'));
+        $this->assertEquals($value, $registry->get('key'));
     }
 
 }
