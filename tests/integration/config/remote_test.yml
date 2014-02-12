@@ -2,6 +2,8 @@ classes:
 
     RemoteService:
         class: \FooServiceInterface
-        remote:
-            protocol: xml-rpc
-            endpoint: http://localhost:8080
+        instanciation : 
+            mode : remote
+            config :
+                protocol: xml-rpc
+                endpoint: http://localhost:8080
