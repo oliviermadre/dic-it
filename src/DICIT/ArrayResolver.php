@@ -1,7 +1,7 @@
 <?php
 namespace DICIT;
 
-class ArrayResolver
+class ArrayResolver implements \Iterator, \Countable
 {
 
     private $source;
@@ -21,8 +21,9 @@ class ArrayResolver
     }
 
     /**
+     *
      * @param string $key
-     * @param string $default
+     * @param mixed $default
      */
     public function resolve($key, $default = null)
     {
@@ -50,11 +51,44 @@ class ArrayResolver
         return $this->wrapIfNecessary($toReturn);
     }
 
-    private function wrapIfNecessary($value) {
+    private function wrapIfNecessary($value)
+    {
         if (is_array($value)) {
             return new static($value);
         }
 
         return $value;
+    }
+
+    public function rewind()
+    {
+        reset($this->source);
+    }
+
+    public function current()
+    {
+        return $this->wrapIfNecessary(current($this->source));
+    }
+
+    public function key()
+    {
+        return key($this->source);
+    }
+
+    public function next()
+    {
+        return next($this->source);
+    }
+
+    public function valid()
+    {
+        $key = key($this->source);
+
+        return ($key !== null && $key !== false);
+    }
+
+    public function count()
+    {
+        return count($this->source);
     }
 }

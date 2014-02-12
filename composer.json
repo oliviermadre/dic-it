@@ -19,13 +19,12 @@
 		}
 	},
 	"require" : {
-		"symfony/yaml" : "2.5.*@dev",
-		"doctrine/annotations" : "1.0.*@dev"
+		"symfony/yaml" : "2.5.*@dev"
 	},
 	"require-dev" : {
-		"squizlabs/php_codesniffer" : "1.5.1",
+		"squizlabs/php_codesniffer" : "~1.5",
 		"league/phpunit-coverage-listener" : "~1.0",
-		"phpunit/phpunit" : "3.7.*",
+		"phpunit/phpunit" : "~3.7",
 		"ocramius/proxy-manager" : "0.5.x-dev",
 		"zendframework/zend-xmlrpc" : "~2.2",
 		"zendframework/zend-json" : "~2.2",

@@ -47,6 +47,12 @@ class Container
 
     /**
      *
+     * @var \DICIT\ReferenceResolver
+     */
+    protected $referenceResolver = null;
+
+    /**
+     *
      * @param Config\AbstractConfig $cfg
      * @param ActivatorFactory $activatorFactory
      * @param InjectorFactory $injectorFactory
@@ -63,6 +69,7 @@ class Container
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
+        $this->referenceResolver = new ReferenceResolver($this);
     }
 
     /**
@@ -102,16 +109,22 @@ class Container
         }
     }
 
+
     public function resolve($reference) {
-        return $this->convertValue($reference);
+        return $this->referenceResolver->resolve($reference);
     }
 
+    /**
+     * Resolves an array of references.
+     * @param array $references
+     * @return array containing all the resolved references
+     */
     public function resolveMany(array $references = null) {
         if ($references === null) {
             return array();
         }
 
-        return $this->convertParameters($references);
+        return $this->referenceResolver->resolveMany($references);
     }
 
     /**
@@ -196,41 +209,5 @@ class Container
         }
 
         return $class;
-    }
-
-    /**
-     * Convert value written in YML to the corresponding variable (object, parameter or scalar)
-     * @param  $value
-     * @return mixed
-     */
-    protected function convertValue($value) {
-        $prefix = substr($value, 0, 1);
-
-        switch($prefix) {
-            case '@' :
-                $toReturn = $this->get(substr($value, 1));
-                break;
-            case '%' :
-                $toReturn = $this->getParameter(substr($value, 1));
-                break;
-            default :
-                $toReturn = $value;
-                break;
-        }
-        return $toReturn;
-    }
-
-    /**
-     * Parameters handler
-     * @param  array $parameters
-     * @return array
-     */
-    protected function convertParameters($parameters) {
-        $convertedParameters = array();
-        foreach($parameters as $value) {
-            $convertedValue = $this->convertValue($value);
-            $convertedParameters[] = $convertedValue;
-        }
-        return $convertedParameters;
     }
 }
