@@ -4,7 +4,7 @@ namespace DICIT;
 
 class ReferenceResolver
 {
-
+    const CONTAINER_REFERENCE = '$container';
     /**
      *
      * @var Container
@@ -18,9 +18,14 @@ class ReferenceResolver
 
     public function resolve($reference)
     {
+        if ($reference === static::CONTAINER_REFERENCE) {
+            return $this->container;
+        }
+
         $prefix = substr($reference, 0, 1);
 
         switch ($prefix) {
+
             case '@' :
                 $toReturn = $this->container->get(substr($reference, 1));
                 break;

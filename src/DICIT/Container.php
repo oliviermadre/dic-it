@@ -100,7 +100,7 @@ class Container
         }
 
         try {
-            return $this->loadService($serviceName, $this->config['classes'][$serviceName]);
+            return $this->loadService($serviceName, $serviceConfig);
         }
         catch (\DICIT\UnknownDefinitionException $ex) {
             throw new \RuntimeException(
