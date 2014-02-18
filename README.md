@@ -29,6 +29,11 @@ classes:
             MyProperty: %MyOtherParameter
 ```
 
+## Referencing the container
+
+To inject the container (though it is not recommended) as a dependency of a class, you can reference it by using the
+special object reference ```$container```
+
 ## Using includes
 
 The configuration can be split into multiple files to ease management of your dependencies :
