@@ -63,8 +63,8 @@ class Container
         $this->registry = new Registry();
         $this->config = new ArrayResolver($cfg->load());
 
-        $this->parameters = $this->config->resolve('parameters', null);
-        $this->classes = $this->config->resolve('classes', null);
+        $this->parameters = $this->config->resolve('parameters', array());
+        $this->classes = $this->config->resolve('classes', array());
 
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
