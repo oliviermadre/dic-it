@@ -23,6 +23,15 @@ class ReferenceResolverTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('injected-parameter'));
     }
 
+    public function testContainerReferencesAreProperlyResolved()
+    {
+        $reference = '$container';
+
+        $resolver = new ReferenceResolver($this->container);
+
+        $this->assertSame($this->container, $resolver->resolve($reference));
+    }
+
     public function testObjectReferencesAreProperlyResolved()
     {
         $reference = '@service';
