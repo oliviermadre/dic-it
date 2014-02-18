@@ -61,10 +61,10 @@ class Container
         ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
     {
         $this->registry = new Registry();
-        $this->config = $cfg->load();
+        $this->config = new ArrayResolver($cfg->load());
 
-        $this->parameters = new ArrayResolver(isset($this->config['parameters']) ? $this->config['parameters'] : null);
-        $this->classes = new ArrayResolver(isset($this->config['classes']) ? $this->config['classes'] : null);
+        $this->parameters = $this->config->resolve('parameters', null);
+        $this->classes = $this->config->resolve('classes', null);
 
         $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
         $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
