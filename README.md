@@ -22,7 +22,7 @@ parameters:
 classes:
     MyServiceName:
         class: \Fully\Qualified\ClassName
-        args: [ @MyDependency, %MyParameter, 'Hard-coded value' ]
+        arguments: [ @MyDependency, %MyParameter, 'Hard-coded value' ]
     MyDependency:
         class: \Fully\Qualified\DependencyClassName
         props:
