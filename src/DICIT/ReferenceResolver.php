@@ -21,23 +21,22 @@ class ReferenceResolver
         if ($reference === static::CONTAINER_REFERENCE) {
             return $this->container;
         }
+        
+        if (!is_string($reference)) {
+            return $reference;
+        }
 
         $prefix = substr($reference, 0, 1);
 
         switch ($prefix) {
 
             case '@' :
-                $toReturn = $this->container->get(substr($reference, 1));
-                break;
+                return $this->container->get(substr($reference, 1));
             case '%' :
-                $toReturn = $this->container->getParameter(substr($reference, 1));
-                break;
+                return $this->container->getParameter(substr($reference, 1));
             default :
-                $toReturn = $reference;
-                break;
+                return $reference;
         }
-
-        return $toReturn;
     }
 
     public function resolveMany(array $references)
