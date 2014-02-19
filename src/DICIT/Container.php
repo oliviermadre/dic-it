@@ -66,8 +66,8 @@ class Container
         $this->parameters = $this->config->resolve('parameters', array());
         $this->classes = $this->config->resolve('classes', array());
 
-        $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
-        $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
+        $this->activatorFactory = $activatorFactory ?: new ActivatorFactory();
+        $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
     }

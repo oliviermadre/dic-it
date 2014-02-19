@@ -21,9 +21,10 @@ class ArrayResolver implements \Iterator, \Countable
     }
 
     /**
-     *
-     * @param string $key
+     * Resolves a value stored in an array, optionally by using dot notation to access nested elements.
+     * @param string $key The key value to resolve.
      * @param mixed $default
+     * @return mixed The resolved value or the provided default value.
      */
     public function resolve($key, $default = null)
     {
