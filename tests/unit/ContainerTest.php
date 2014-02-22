@@ -123,5 +123,54 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->get('cyclic');
     }
+    
+    public function testResolvingAManuallyBoundObjectReturnsCorrectInstance()
+    {
+        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
+            ->disableOriginalConstructor()
+            ->setMethods(array('load', 'getData'))
+            ->getMockForAbstractClass();
+        
+        $config->expects($this->any())
+            ->method('load')
+            ->will($this->returnValue(array('classes' => array())));
+        
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
+        
+        $item = new \stdClass();
+        
+        $container->bind('boundKey', $item);
+        
+        $this->assertSame($item, $container->get('boundKey'));
+    }
+    
+    public function testResolvingAManuallyBoundObjectDefinitionReturnsCorrectInstance()
+    {
+        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
+            ->disableOriginalConstructor()
+            ->setMethods(array('load', 'getData'))
+            ->getMockForAbstractClass();
+        
+        $config->expects($this->any())
+            ->method('load')
+            ->will($this->returnValue(array('classes' => array())));
+    
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
+    
+        $itemDefinition = array(
+            'class' => '\stdClass',
+            'props' => array(
+                'dummy' => 'dummy-value'
+            )
+        );
+    
+        $container->bind('boundKey', $itemDefinition);
+    
+        $item = $container->get('boundKey');
+        
+        $this->assertEquals('dummy-value', $item->dummy);
+    }
 
 }

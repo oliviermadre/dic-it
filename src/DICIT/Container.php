@@ -66,12 +66,27 @@ class Container
         $this->parameters = $this->config->resolve('parameters', array());
         $this->classes = $this->config->resolve('classes', array());
 
-        $this->activatorFactory = $activatorFactory ? $activatorFactory : new ActivatorFactory();
-        $this->injectorFactory = $injectorFactory ? $injectorFactory : new InjectorFactory();
+        $this->activatorFactory = $activatorFactory ?: new ActivatorFactory();
+        $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
     }
 
+    /**
+     * Binds an existing object or an object definition to a key in the container.
+     * @param string $key The key to which the new object/definition should be bound.
+     * @param mixed $item An array or an object to bind. If $item is an object, it will be registered as a singleton in the
+     * object registry. Otherwise, $item will be handled as an object definition.
+     */
+    public function bind($key, $item) {
+        if (is_array($item)) {
+            $this->classes[$key] = $item;
+        } 
+        else {
+            $this->registry->set($key, $item);    
+        }
+    }
+    
     /**
      * Retrieve the parameter value configured in the container
      * @param  string $parameterName
@@ -93,6 +108,10 @@ class Container
      * @return object
      */
     public function get($serviceName) {
+        if ($this->registry->has($serviceName)) {
+            return $this->registry->get($serviceName);
+        }
+        
         $serviceConfig = $this->classes->resolve($serviceName, null);
 
         if ($serviceConfig == null) {
@@ -149,22 +168,17 @@ class Container
             $isSingleton = (bool)$serviceConfig['singleton'];
         }
 
-        if ($isSingleton && $this->registry->get($serviceName)) {
-            return $this->registry->get($serviceName);
+        $class = $this->activate($serviceName, $serviceConfig);
+
+        if ($isSingleton) {
+            // Only store if singleton'ed to spare memory
+            $this->registry->set($serviceName, $class);
         }
-        else {
-            $class = $this->activate($serviceName, $serviceConfig);
 
-            if ($isSingleton) {
-                // Only store if singleton'ed to spare memory
-                $this->registry->set($serviceName, $class);
-            }
+        $this->inject($class, $serviceConfig);
+        $class = $this->encapsulate($class, $serviceConfig);
 
-            $this->inject($class, $serviceConfig);
-            $class = $this->encapsulate($class, $serviceConfig);
-
-            return $class;
-        }
+        return $class;
     }
 
     /**
