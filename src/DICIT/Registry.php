@@ -1,13 +1,15 @@
 <?php
 namespace DICIT;
 
+/**
+ * Registry for storing built object instances.
+ * @author Olivier Madre
+ * @author Thibaud Fabre
+ *
+ */
 class Registry
 {
     protected $data = array();
-
-    public function __construct() {
-
-    }
 
     /**
      * Flush all stored instances from the registry.
@@ -15,7 +17,6 @@ class Registry
      */
     public function flush() {
         $this->data = array();
-        return $this;
     }
 
     /**
@@ -24,7 +25,7 @@ class Registry
      * @return mixed
      */
     public function get($key, $throwIfNotFound = false) {
-        if (array_key_exists($key, $this->data)) {
+        if ($this->has($key)) {
             return $this->data[$key];
         }
         else if ($throwIfNotFound) {
@@ -35,6 +36,15 @@ class Registry
         }
     }
 
+    /**
+     * Returns a boolean indicating whether there is an object associated to a given key in the registry. 
+     * @param string $key
+     * @return boolean
+     */
+    public function has($key) {
+        return array_key_exists($key, $this->data);
+    }
+    
     /**
      * Stores an object instance in the registry.
      * @param string $key
