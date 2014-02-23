@@ -75,7 +75,8 @@ class Container
     /**
      * Binds an existing object or an object definition to a key in the container.
      * @param string $key The key to which the new object/definition should be bound.
-     * @param mixed $item An array or an object to bind. If $item is an object, it will be registered as a singleton in the
+     * @param mixed $item An array or an object to bind.
+     * If $item is an object, it will be registered as a singleton in the
      * object registry. Otherwise, $item will be handled as an object definition.
      */
     public function bind($key, $item) {
@@ -104,8 +105,9 @@ class Container
             $r[$subNode] = array();
             $r = &$r[$subNode];
         }
-
         $r = $value;
+        $r = &$root;
+
         if ($this->parameters) {
             $parameters = $this->parameters->extract();
         }
@@ -113,8 +115,7 @@ class Container
             $parameters = array();
         }
 
-        $this->parameters = new ArrayResolver(array_merge_recursive($parameters, $root));
-
+        $this->parameters = new ArrayResolver(array_merge_recursive($parameters, $r));
         return $this;
     }
 
@@ -277,7 +278,8 @@ class Container
         if (is_array($value)) {
             array_walk_recursive($value, function($item, $k) use($key) {
                 if (!is_scalar($item)) {
-                    throw new IllegalTypeException(sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key));
+                    throw new IllegalTypeException(
+                        sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key));
                 }
             });
         }

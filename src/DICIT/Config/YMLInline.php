@@ -15,7 +15,6 @@ class YMLInline extends AbstractConfig
     }
 
     protected function loadInline($inline) {
-        $yml = array();
         $yaml = new \Symfony\Component\Yaml\Yaml();
         $res = $yaml->parse($inline);
         return $res;
