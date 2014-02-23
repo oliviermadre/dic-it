@@ -81,12 +81,43 @@ class Container
     public function bind($key, $item) {
         if (is_array($item)) {
             $this->classes[$key] = $item;
-        } 
+        }
         else {
-            $this->registry->set($key, $item);    
+            $this->registry->set($key, $item);
         }
     }
-    
+
+    /**
+     * Set a parameter in the container on any key
+     * @param [type] $key   [description]
+     * @param [type] $value [description]
+     */
+    public function setParameter($key, $value) {
+        $path = explode('.', $key);
+
+        $this->validateParameter($key, $value);
+
+
+        $root = array();
+        $r = &$root;
+        foreach($path as $subNode) {
+            $r[$subNode] = array();
+            $r = &$r[$subNode];
+        }
+
+        $r = $value;
+        if ($this->parameters) {
+            $parameters = $this->parameters->extract();
+        }
+        else {
+            $parameters = array();
+        }
+
+        $this->parameters = new ArrayResolver(array_merge_recursive($parameters, $root));
+
+        return $this;
+    }
+
     /**
      * Retrieve the parameter value configured in the container
      * @param  string $parameterName
@@ -111,7 +142,7 @@ class Container
         if ($this->registry->has($serviceName)) {
             return $this->registry->get($serviceName);
         }
-        
+
         $serviceConfig = $this->classes->resolve($serviceName, null);
 
         if ($serviceConfig == null) {
@@ -223,5 +254,34 @@ class Container
         }
 
         return $class;
+    }
+
+    /**
+     * Check that the value to bind is a scalar, or an array multi-dimensional of scalars
+     * @param  string $key
+     * @param  mixed $value
+     * @return boolean
+     *
+     * @throws IllegalTypeException
+     *
+     */
+    protected function validateParameter($key, $value) {
+        if (is_scalar($value)) {
+            return true;
+        }
+
+        if (is_object($value)) {
+            throw new IllegalTypeException(sprintf("Can't bind parameter %s with a callable", $key));
+        }
+
+        if (is_array($value)) {
+            array_walk_recursive($value, function($item, $k) use($key) {
+                if (!is_scalar($item)) {
+                    throw new IllegalTypeException(sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key));
+                }
+            });
+        }
+
+        return true;
     }
 }
