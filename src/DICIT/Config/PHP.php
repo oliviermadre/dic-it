@@ -11,7 +11,7 @@ class PHP extends AbstractConfig
 
     protected function doLoad() {
         if (file_exists($this->filePath) && is_readable($this->filePath)) {
-            include $this->filePath;
+            $array = include $this->filePath;
             return $array;
         }
         else {
