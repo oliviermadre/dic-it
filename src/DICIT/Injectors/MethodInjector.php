@@ -16,8 +16,17 @@ class MethodInjector implements Injector
         }
 
         foreach($callConfig as $methodName => $parameters) {
+            if (false !== strpos($methodName, '[')) {
+                if (preg_match('`^([^\[]*)\[[0-9]*\]$`i', $methodName, $matches)) {
+                    $methodToCall = $matches[1];
+                }
+            }
+            else {
+                $methodToCall = $methodName;
+            }
+
             $convertedParameters = $container->resolveMany($parameters);
-            call_user_func_array(array($service, $methodName), $convertedParameters);
+            call_user_func_array(array($service, $methodToCall), $convertedParameters);
         }
 
         return true;
