@@ -43,7 +43,7 @@ class MethodInjectorTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('resolveMany'))
             ->getMock();
 
-        $container->expects($this->once())
+        $container->expects($this->any())
             ->method('resolveMany')
             ->will($this->returnValue(array(2)));
 
