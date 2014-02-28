@@ -54,6 +54,25 @@ class MethodInjectorTest extends \PHPUnit_Framework_TestCase
         $actual = $injector->inject($container, $mock, $serviceConfig);
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMalformedMethodNameThrowsRuntime()
+    {
+        $mock = $this->getMock('\DICIT\Tests\Injectors\TestInjectable');
+
+        $container = $this->getMockBuilder('\DICIT\Container')
+            ->disableOriginalConstructor()
+            ->setMethods(array('resolveMany'))
+            ->getMock();
+
+        $injector = new MethodInjector();
+
+        $serviceConfig = array('call' => array('setMethod[abc' => array('value')));
+
+        $actual = $injector->inject($container, $mock, $serviceConfig);
+    }
+
 }
 
 class TestInjectable
