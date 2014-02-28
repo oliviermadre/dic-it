@@ -16,9 +16,14 @@ class MethodInjector implements Injector
         }
 
         foreach($callConfig as $methodName => $parameters) {
+            $methodToCall = null;
+
             if (false !== strpos($methodName, '[')) {
                 if (preg_match('`^([^\[]*)\[[0-9]*\]$`i', $methodName, $matches)) {
                     $methodToCall = $matches[1];
+                }
+                else {
+                    throw new \RuntimeException(sprintf("Invalid method name '%s'", $methodName));
                 }
             }
             else {
