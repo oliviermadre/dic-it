@@ -14,7 +14,8 @@ class ActivatorFactory
 
     private $activators = array();
 
-    public function __construct($deferActivations = false) {
+    public function __construct($deferActivations = false)
+    {
         $this->addActivator('default', new DefaultActivator(), $deferActivations);
         $this->addActivator('builder-static', new StaticInvocationActivator(), $deferActivations);
         $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
@@ -25,7 +26,7 @@ class ActivatorFactory
      * @param string $key
      * @param boolean $deferredActivations
      */
-    private function addActivator($key, Activator $activator, $deferredActivations)
+    public function addActivator($key, Activator $activator, $deferredActivations)
     {
         if ($deferredActivations) {
             $activator = new LazyActivator($activator);

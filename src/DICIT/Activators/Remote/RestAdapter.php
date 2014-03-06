@@ -20,7 +20,7 @@ class RestAdapter implements AdapterInterface
 
     public function call($wrappedClass, $method, array $params = array())
     {
-        $request = $this->client->post(sprintf('/%s/%s', $wrappedClass, $method), $params);
+        $request = $this->client->post(sprintf('/%s/%s', str_replace('\\', '/', $wrappedClass), $method), $params);
 
         $response = $request->send();
 
