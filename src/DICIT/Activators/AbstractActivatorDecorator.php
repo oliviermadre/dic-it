@@ -19,7 +19,7 @@ class AbstractActivatorDecorator implements ActivatorDecorator
         return $this;
     }
     
-    public function createInstance(Container $container, &$serviceName, array &$serviceConfig)
+    public function createInstance(Container $container, $serviceName, array $serviceConfig)
     {
         $this->before($container, $serviceName, $serviceConfig);
         $result = $this->aroundNext($container, $serviceName, $serviceConfig);
