@@ -4,6 +4,7 @@ namespace DICIT\Activators;
 use DICIT\Activator;
 use DICIT\Container;
 use DICIT\UnbuildableServiceException;
+use DICIT\Util\ParamsResolver;
 
 class DefaultActivator implements Activator
 {
@@ -18,7 +19,7 @@ class DefaultActivator implements Activator
 
         $class = new \ReflectionClass($className);
         $activationArgs = isset($serviceConfig['arguments']) ?
-            $container->resolveMany($serviceConfig['arguments']) : array();
+            ParamsResolver::resolveParams($container, $serviceConfig['arguments']) : array();
 
         if (! empty($activationArgs)) {
             $instance = $class->newInstanceArgs($activationArgs);

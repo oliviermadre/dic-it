@@ -64,9 +64,9 @@ class ActivatorFactory
         elseif (array_key_exists('class', $configuration)) {
             if (array_key_exists('remote', $configuration)) {
                 $activator =  $this->activators['remote'];
+            } else {
+                $activator =  $this->activators['default'];
             }
-
-            $activator =  $this->activators['default'];
         }
 
         if ($activator == null) {
@@ -79,7 +79,7 @@ class ActivatorFactory
         foreach($this->activatorsDecorators as $key=>$decorator) {
             /* @var $decorator ActivatorDecorator */
             if (array_key_exists($key, $configuration)) {
-                $dec = clone $dec;
+                $dec = clone $decorator;
                 $dec->setNext($activator);
                 $activator = $dec;
             }
