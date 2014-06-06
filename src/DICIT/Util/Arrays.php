@@ -4,7 +4,7 @@ namespace DICIT\Util;
 class Arrays
 {
 
-    public static function merge_recursive_unique($array0, $array1) {
+    public static function mergeRecursiveUnique($array0, $array1) {
         $arrays = func_get_args();
         $remains = $arrays;
 
@@ -49,5 +49,4 @@ class Arrays
         }
         return $result;
     }
-
 }

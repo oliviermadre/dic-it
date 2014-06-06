@@ -26,11 +26,11 @@ class YML extends AbstractConfig
             if ($key == 'include') {
                 foreach($value as $file) {
                     $subYml = $this->loadFile($dirname . '/' . $file);
-                    $yml = Arrays::merge_recursive_unique($yml, $subYml);
+                    $yml = Arrays::mergeRecursiveUnique($yml, $subYml);
                 }
             }
             else {
-                $yml = Arrays::merge_recursive_unique($yml, array($key => $res[$key]));
+                $yml = Arrays::mergeRecursiveUnique($yml, array($key => $res[$key]));
             }
         }
 
