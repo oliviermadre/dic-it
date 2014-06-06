@@ -1,6 +1,8 @@
 <?php
 namespace DICIT\Config;
 
+use DICIT\Util\Arrays;
+
 class YML extends AbstractConfig
 {
     protected $filePath = null;
@@ -24,11 +26,11 @@ class YML extends AbstractConfig
             if ($key == 'include') {
                 foreach($value as $file) {
                     $subYml = $this->loadFile($dirname . '/' . $file);
-                    $yml = array_merge_recursive($yml, $subYml);
+                    $yml = Arrays::merge_recursive_unique($yml, $subYml);
                 }
             }
             else {
-                $yml = array_merge_recursive($yml, array($key => $res[$key]));
+                $yml = Arrays::merge_recursive_unique($yml, array($key => $res[$key]));
             }
         }
 
