@@ -1,6 +1,8 @@
 <?php
 namespace DICIT;
 
+use \DICIT\Util\Arrays;
+
 class Container
 {
     /**
@@ -115,7 +117,7 @@ class Container
             $parameters = array();
         }
 
-        $this->parameters = new ArrayResolver(array_merge_recursive($parameters, $r));
+        $this->parameters = new ArrayResolver(Arrays::mergeRecursiveUnique($parameters, $r));
         return $this;
     }
 
