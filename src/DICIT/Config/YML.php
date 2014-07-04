@@ -8,15 +8,18 @@ class YML extends AbstractConfig
     protected $filePath = null;
     protected $data = array();
 
-    public function __construct($filePath) {
+    public function __construct($filePath)
+    {
         $this->filePath = $filePath;
     }
 
-    protected function doLoad() {
+    protected function doLoad()
+    {
         return $this->loadFile($this->filePath);
     }
 
-    protected function loadFile($filePath) {
+    protected function loadFile($filePath)
+    {
         $yml = array();
         $dirname = dirname($filePath);
         $yaml = new \Symfony\Component\Yaml\Yaml();
@@ -37,7 +40,8 @@ class YML extends AbstractConfig
         return $yml;
     }
 
-    public function compile() {
+    public function compile()
+    {
         $ret = $this->load();
         $dump = var_export($ret, true);
         return $dump;

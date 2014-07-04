@@ -8,7 +8,8 @@ use DICIT\UnbuildableServiceException;
 class StaticInvocationActivator implements Activator
 {
 
-    public function createInstance(Container $container, $serviceName, array $serviceConfig) {
+    public function createInstance(Container $container, $serviceName, array $serviceConfig)
+    {
         list($className, $methodName) = explode('::', $serviceConfig['builder']);
 
         $activationArgs = isset($serviceConfig['arguments']) ?

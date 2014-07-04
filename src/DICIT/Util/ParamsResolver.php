@@ -7,11 +7,12 @@ class ParamsResolver
 {
     /**
      * Resolve the params of an array
-     * 
+     *
      * @param array $params
      * @return array
      */
-    public static function resolveParams(Container $container, $params) {
+    public static function resolveParams(Container $container, $params)
+    {
         $resolvedParams = array();
         foreach($params as $key=>$param) {
             $resolvedParam = null;

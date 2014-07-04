@@ -9,7 +9,8 @@ class UnknownDefinitionException extends \RuntimeException
     /**
      * @param string $serviceName
      */
-    public function __construct($serviceName) {
+    public function __construct($serviceName)
+    {
         parent::__construct('Class not configured : ' . $serviceName);
 
         $this->serviceName = $serviceName;

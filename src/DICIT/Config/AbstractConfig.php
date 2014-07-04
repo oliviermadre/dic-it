@@ -5,7 +5,8 @@ abstract class AbstractConfig
 {
     protected $data = array();
 
-    public function load($force = false) {
+    public function load($force = false)
+    {
         if ($force || empty($this->data)) {
             $this->data = $this->doLoad();
         }
@@ -13,7 +14,8 @@ abstract class AbstractConfig
         return $this->data;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
