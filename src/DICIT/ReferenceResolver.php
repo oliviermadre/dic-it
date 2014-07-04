@@ -25,10 +25,12 @@ class ReferenceResolver
      */
     public function resolve($reference)
     {
+        if (!is_string($reference)) {
+            return $reference;
+        }
         $prefix = substr($reference, 0, 1);
 
         switch (1) {
-            case !is_string($reference)                                         : return $reference;
             case $prefix    === '@'                                             : return $this->container->get(substr($reference, 1));
             case $prefix    === '%'                                             : return $this->container->getParameter(substr($reference, 1));
             case preg_match(static::CONTAINER_REGEXP, $reference, $matches)     : return $this->container;
