@@ -19,20 +19,30 @@ Sample YAML file :
 parameters:
     MyParameter: 'Some parameter value'
     MyOtherParameter: 42
+    MyParameters:
+        nested_level:
+            foo : foo
+            bar : bar
+            baz : foobar
 classes:
     MyServiceName:
         class: \Fully\Qualified\ClassName
-        arguments: [ @MyDependency, %MyParameter, 'Hard-coded value' ]
+        arguments: [ @MyDependency, %MyParameter, %MyParameters.nested_level, 'Hard-coded value', $container, $env.ENV, $const.ROOT_PATH ]
     MyDependency:
         class: \Fully\Qualified\DependencyClassName
         props:
             MyProperty: %MyOtherParameter
 ```
 
-## Referencing the container
+## References
 
-To inject the container (though it is not recommended) as a dependency of a class, you can reference it by using the
-special object reference ```$container```
+You can inject different kind of references inside class definitions. You can get other service instances, parameters, the container itself, env variables, and constant values.
+- @ServiceName : fetch an instance of that definition
+- %param : fetch a parameter defined in the container
+- $container : fetch the container itself
+- $env.ENV_NAME : fetch an environment variable
+- $const.CONST_NAME : fetch a global defined constant value
+
 
 ## Using includes
 
