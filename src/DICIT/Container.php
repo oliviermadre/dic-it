@@ -46,7 +46,7 @@ class Container
      * @param InjectorFactory $injectorFactory
      */
     public function __construct(Config\AbstractConfig $cfg,
-        ServiceBuilder $pipeline)
+        ServiceBuilder $builder)
     {
         $this->registry = new Registry();
         $this->config = new ArrayResolver($cfg->load());

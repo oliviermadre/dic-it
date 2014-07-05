@@ -4,6 +4,7 @@ namespace DICIT\Tests;
 
 use DICIT\Container;
 use DICIT\ActivatorFactory;
+use DICIT\ContainerFactory;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,7 +22,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('doLoad')
             ->will($this->returnValue(array()));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->get('UnknownService');
     }
@@ -42,7 +43,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
                     'service' => array('class' => '\stdClass', 'props' => array('dep' => '@missing-service'))
             ))));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->get('service');
     }
@@ -60,7 +61,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
                     'param' => 'value'
                 ))));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $this->assertEquals('value', $container->getParameter('param'));
     }
@@ -101,8 +102,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', $first, ! $first)));
 
-        $activatorFactory = new ActivatorFactory(true);
-        $container = new Container($config, $activatorFactory);
+        $container = ContainerFactory::create($config, array('deferred' => true));
 
         $container->get('cyclic');
     }
@@ -118,8 +118,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', true, true)));
 
-        $activatorFactory = new ActivatorFactory(true);
-        $container = new Container($config, $activatorFactory);
+        $container = ContainerFactory::create($config, array('deferred' => true));
 
         $container->get('cyclic');
     }
@@ -135,8 +134,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('classes' => array())));
 
-        $activatorFactory = new ActivatorFactory(true);
-        $container = new Container($config, $activatorFactory);
+        $container = ContainerFactory::create($config, array('deferred' => true));
 
         $item = new \stdClass();
 
@@ -156,8 +154,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('classes' => array())));
 
-        $activatorFactory = new ActivatorFactory(true);
-        $container = new Container($config, $activatorFactory);
+        $container = ContainerFactory::create($config, array('deferred' => true));
 
         $itemDefinition = array(
             'class' => '\stdClass',
@@ -187,7 +184,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->setParameter('dummy.key', function() { });
     }
@@ -206,7 +203,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', 'dummy-key2' => function() {}));
     }
@@ -226,7 +223,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', "sub" => array('dummy-key2' => function() {})));
     }
@@ -246,7 +243,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = new Container($config);
+        $container = ContainerFactory::create($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', "sub" => array('dummy-key2' => new \stdClass())));
     }
@@ -259,7 +256,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = new Container(new \DICIT\Config\YMLInline($yml));
+        $container = ContainerFactory::createFromInlineYaml($yml);
 
         $value = $container->getParameter('dummy.key');
 
@@ -274,7 +271,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = new Container(new \DICIT\Config\YMLInline($yml));
+        $container = ContainerFactory::createFromInlineYaml($yml);
 
         $container->setParameter('dummy.key2', 'dummy-value2');
         $value = $container->getParameter('dummy.key2');
@@ -287,7 +284,7 @@ YML;
 parameters :
 YML;
 
-        $container = new Container(new \DICIT\Config\YMLInline($yml));
+        $container = ContainerFactory::createFromInlineYaml($yml);
         $dbConfig = array("host" => "127.0.0.1", "port" => 5432);
         $container->setParameter('dummy', array('db' => $dbConfig));
         $host = $container->getParameter('dummy.db.host');
@@ -306,7 +303,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = new Container(new \DICIT\Config\YMLInline($yml));
+        $container = ContainerFactory::createFromInlineYaml($yml);
         $container->setParameter('dummy', array('db' => array("host" => "127.0.0.1", "port" => 5432)));
         $this->assertSame('dummy-value', $container->getParameter('dummy.key'));
     }
