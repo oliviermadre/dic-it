@@ -52,11 +52,11 @@ class ServiceBuilder
     
         if ($isSingleton) {
             // Only store if singleton'ed to spare memory
-            $container->bind($serviceName, $class);
+            $container->lateBind($serviceName, $class);
         }
     
         $this->inject($container, $class, $serviceConfig);
-        $class = $this->encapsulate($container, $class, $serviceConfig);
+        $this->encapsulate($container, $class, $serviceConfig);
     
         return $class;
     }
@@ -100,14 +100,12 @@ class ServiceBuilder
      * @param array $serviceConfig            
      * @return object
      */
-    protected function encapsulate($container, $class, $serviceConfig)
+    protected function encapsulate($container, &$class, $serviceConfig)
     {
         $encapsulators = $this->encapsulatorFactory->getEncapsulators();
         
         foreach ($encapsulators as $encapsulator) {
             $class = $encapsulator->encapsulate($container, $class, $serviceConfig);
         }
-        
-        return $class;
     }
 }

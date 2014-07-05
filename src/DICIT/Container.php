@@ -76,6 +76,16 @@ class Container
             $this->registry->set($key, $item);
         }
     }
+   
+    public function lateBind($key, & $item)
+    {
+        if (is_array($item)) {
+            $this->classes[$key] = & $item;
+        }
+        else {
+            $this->registry->rset($key, $item);
+        }
+    }
 
     /**
      * Set a parameter in the container on any key

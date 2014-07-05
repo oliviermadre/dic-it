@@ -5,6 +5,8 @@ namespace DICIT;
 use DICIT\Config\AbstractConfig;
 use DICIT\Config\YML;
 use DICIT\Config\YMLInline;
+use DICIT\Config\Json;
+use DICIT\Config\PHP;
 
 class ContainerFactory
 {

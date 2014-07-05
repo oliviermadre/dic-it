@@ -137,12 +137,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container = ContainerFactory::create($config, array('deferred' => true));
 
         $item = new \stdClass();
-
+        
         $container->bind('boundKey', $item);
 
         $this->assertSame($item, $container->get('boundKey'));
+        
+        $item = new \stdClass();
+        
+        $this->assertNotSame($item, $container->get('boundKey'));
     }
-
+    
     public function testResolvingAManuallyBoundObjectDefinitionReturnsCorrectInstance()
     {
         $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
@@ -169,7 +173,57 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('dummy-value', $item->dummy);
     }
+    
+    public function testResolvingAManuallyLateBoundObjectReturnsCorrectInstance()
+    {
+        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
+            ->disableOriginalConstructor()
+            ->setMethods(array('load', 'getData'))
+            ->getMockForAbstractClass();
+    
+        $config->expects($this->any())
+            ->method('load')
+            ->will($this->returnValue(array('classes' => array())));
+    
+        $container = ContainerFactory::create($config, array('deferred' => false));
+    
+        $item = new \stdClass();
+    
+        $container->lateBind('boundKey', $item);
+    
+        $item = new \stdClass();
+        
+        $this->assertSame($item, $container->get('boundKey'));
+        
+        $item = new \stdClass();
+        
+        $this->assertSame($item, $container->get('boundKey'));
+    }
 
+    public function testResolvingOutOfScopeLateBoundObjectsReturnsNonNullInstance()
+    {
+        $test = function ($container) {
+            $bla = new \stdClass();
+            $container->lateBind('test', $bla);
+        };
+        
+        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
+            ->disableOriginalConstructor()
+            ->setMethods(array('load', 'getData'))
+            ->getMockForAbstractClass();
+        
+        $config->expects($this->any())
+            ->method('load')
+            ->will($this->returnValue(array('classes' => array())));
+        
+        $container = ContainerFactory::create($config, array('deferred' => false));
+        
+        $test($container);
+        $test = null;
+        
+        $this->assertNotNull($container->get('test'));
+    }
+    
     /**
      * @expectedException \DICIT\IllegalTypeException
      */

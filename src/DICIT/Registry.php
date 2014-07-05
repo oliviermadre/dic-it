@@ -53,7 +53,17 @@ class Registry
      * @param string $key
      * @param mixed $value
      */
-    public function set($key, & $value)
+    public function set($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+    
+    /**
+     * Stores an object reference in the registry.
+     * @param string $key
+     * @param mixed $value
+     */
+    public function rset($key, & $value)
     {
         $this->data[$key] = & $value;
     }

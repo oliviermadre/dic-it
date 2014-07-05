@@ -44,5 +44,18 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($value, $registry->get('key'));
     }
+    
+    public function testRegistryStoresCorrectObjectReferences()
+    {
+        $registry = new Registry();
+        $value = new \stdClass();
+        
+        $registry->set('key', $value);
+        
+        $value->property = 'modified';
+        
+        $this->assertEquals('modified', $registry->get('key')->property);
+        $this->assertSame($value, $registry->get('key'));
+    }
 
 }
