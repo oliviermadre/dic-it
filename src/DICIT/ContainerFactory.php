@@ -37,10 +37,10 @@ class ContainerFactory
     {
         $resolver = new ArrayResolver($options);
         
-        $deferred = (bool) $resolver->resolve('deferred', false);
+        $deferred = (bool)$resolver->resolve('deferred', false);
         
         $pipeline = new ServiceBuilder(
-    	    new ActivatorFactory($deferred),
+            new ActivatorFactory($deferred),
             new InjectorFactory(),
             new EncapsulatorFactory()
         );
