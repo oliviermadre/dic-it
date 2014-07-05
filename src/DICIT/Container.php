@@ -2,6 +2,7 @@
 namespace DICIT;
 
 use \DICIT\Util\Arrays;
+use DICIT\Config\TemplatedConfigProcessor;
 
 class Container
 {
@@ -51,7 +52,7 @@ class Container
         ServiceBuilder $builder)
     {
         $this->registry = new Registry();
-        $this->config = new ArrayResolver($cfg->load());
+        $this->config = TemplatedConfigProcessor::process(new ArrayResolver($cfg->load()));
 
         $this->parameters = $this->config->resolve('parameters', array());
         $this->classes = $this->config->resolve('classes', array());
