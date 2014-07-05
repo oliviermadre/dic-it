@@ -25,7 +25,7 @@ class ReferenceResolver
      */
     public function resolve($reference)
     {
-        if (is_object($reference)) {
+        if (is_object($reference) || is_array($reference)) {
             return $this->container->build($reference);
         }
         elseif (!is_string($reference)) {
