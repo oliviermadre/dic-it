@@ -25,10 +25,7 @@ class ReferenceResolver
      */
     public function resolve($reference)
     {
-        if (is_object($reference) || is_array($reference)) {
-            return $this->container->build($reference);
-        }
-        elseif (!is_string($reference)) {
+        if (!is_string($reference)) {
             return $reference;
         }
         $prefix = substr($reference, 0, 1);

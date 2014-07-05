@@ -2,7 +2,6 @@
 namespace DICIT;
 
 use \DICIT\Util\Arrays;
-use DICIT\Config\TemplatedConfigProcessor;
 
 class Container
 {
@@ -32,9 +31,21 @@ class Container
 
     /**
      *
-     * @var \DICIT\ServiceBuilder
+     * @var \DICIT\ActivatorFactory
      */
-    protected $serviceBuilder;
+    protected $activatorFactory = null;
+
+    /**
+     *
+     * @var \DICIT\InjectorFactory
+     */
+    protected $injectorFactory = null;
+
+    /**
+     *
+     * @var \DICIT\EncapsulatorFactory
+     */
+    protected $encapsulatorFactory = null;
 
     /**
      *
@@ -49,27 +60,20 @@ class Container
      * @param InjectorFactory $injectorFactory
      */
     public function __construct(Config\AbstractConfig $cfg,
-        ServiceBuilder $builder)
+        ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
     {
         $this->registry = new Registry();
-        $this->config = TemplatedConfigProcessor::process(new ArrayResolver($cfg->load()));
+        $this->config = new ArrayResolver($cfg->load());
 
         $this->parameters = $this->config->resolve('parameters', array());
         $this->classes = $this->config->resolve('classes', array());
 
-        $this->serviceBuilder = $builder;
+        $this->activatorFactory = $activatorFactory ?: new ActivatorFactory();
+        $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
+        $this->encapsulatorFactory = new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
     }
 
-    public function build($definition, $serviceName = null)
-    {
-        if ($serviceName === null) {
-            $serviceName = md5($definition . rand(0, 10000));
-        }
-        
-        return $this->serviceBuilder->buildService($this, $serviceName, $definition);
-    }
-    
     /**
      * Binds an existing object or an object definition to a key in the container.
      * @param string $key The key to which the new object/definition should be bound.
@@ -84,16 +88,6 @@ class Container
         }
         else {
             $this->registry->set($key, $item);
-        }
-    }
-   
-    public function lateBind($key, & $item)
-    {
-        if (is_array($item)) {
-            $this->classes[$key] = & $item;
-        }
-        else {
-            $this->registry->rset($key, $item);
         }
     }
 
@@ -172,12 +166,9 @@ class Container
         }
     }
 
-    /**
-     * Resolves the value of a reference key. 
-     * @param string $reference
-     * @return mixed
-     */
-    public function resolve($reference) {
+
+    public function resolve($reference)
+    {
         return $this->referenceResolver->resolve($reference);
     }
 
@@ -211,8 +202,72 @@ class Container
      * @param string $serviceName
      * @return object
      */
-    protected function loadService($serviceName, $serviceConfig) {
-        return $this->serviceBuilder->buildService($this, $serviceName, $serviceConfig);
+    protected function loadService($serviceName, $serviceConfig)
+    {
+        $isSingleton = false;
+
+        if (array_key_exists('singleton', $serviceConfig)) {
+            $isSingleton = (bool)$serviceConfig['singleton'];
+        }
+
+        $class = $this->activate($serviceName, $serviceConfig);
+
+        if ($isSingleton) {
+            // Only store if singleton'ed to spare memory
+            $this->registry->set($serviceName, $class);
+        }
+
+        $this->inject($class, $serviceConfig);
+        $class = $this->encapsulate($class, $serviceConfig);
+
+        return $class;
+    }
+
+    /**
+     * Handles class instanciation
+     * @param  array $serviceConfig
+     * @param string $serviceName
+     * @return object
+     */
+    protected function activate($serviceName, $serviceConfig)
+    {
+        $activator = $this->activatorFactory->getActivator($serviceName, $serviceConfig);
+
+        return $activator->createInstance($this, $serviceName, $serviceConfig);
+    }
+
+    /**
+     * Handle method invocations in the class
+     * @param  object $class
+     * @param  array $serviceConfig
+     * @return boolean
+     */
+    protected function inject($class, $serviceConfig)
+    {
+        $injectors = $this->injectorFactory->getInjectors();
+
+        foreach ($injectors as $injector) {
+            $injector->inject($this, $class, $serviceConfig);
+        }
+
+        return true;
+    }
+
+    /**
+     * Interceptor handler
+     * @param  object $class
+     * @param  array $serviceConfig
+     * @return object
+     */
+    protected function encapsulate($class, $serviceConfig)
+    {
+        $encapsulators = $this->encapsulatorFactory->getEncapsulators();
+
+        foreach ($encapsulators as $encapsulator) {
+            $class = $encapsulator->encapsulate($this, $class, $serviceConfig);
+        }
+
+        return $class;
     }
 
     /**

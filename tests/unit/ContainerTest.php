@@ -4,7 +4,6 @@ namespace DICIT\Tests;
 
 use DICIT\Container;
 use DICIT\ActivatorFactory;
-use DICIT\ContainerFactory;
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +21,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('doLoad')
             ->will($this->returnValue(array()));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->get('UnknownService');
     }
@@ -43,7 +42,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
                     'service' => array('class' => '\stdClass', 'props' => array('dep' => '@missing-service'))
             ))));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->get('service');
     }
@@ -61,7 +60,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
                     'param' => 'value'
                 ))));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $this->assertEquals('value', $container->getParameter('param'));
     }
@@ -102,7 +101,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', $first, ! $first)));
 
-        $container = ContainerFactory::create($config, array('deferred' => true));
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $container->get('cyclic');
     }
@@ -118,7 +118,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue($this->getCyclicDependencies('cyclic', true, true)));
 
-        $container = ContainerFactory::create($config, array('deferred' => true));
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $container->get('cyclic');
     }
@@ -134,19 +135,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('classes' => array())));
 
-        $container = ContainerFactory::create($config, array('deferred' => true));
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $item = new \stdClass();
-        
+
         $container->bind('boundKey', $item);
 
         $this->assertSame($item, $container->get('boundKey'));
-        
-        $item = new \stdClass();
-        
-        $this->assertNotSame($item, $container->get('boundKey'));
     }
-    
+
     public function testResolvingAManuallyBoundObjectDefinitionReturnsCorrectInstance()
     {
         $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
@@ -158,7 +156,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('classes' => array())));
 
-        $container = ContainerFactory::create($config, array('deferred' => true));
+        $activatorFactory = new ActivatorFactory(true);
+        $container = new Container($config, $activatorFactory);
 
         $itemDefinition = array(
             'class' => '\stdClass',
@@ -173,57 +172,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('dummy-value', $item->dummy);
     }
-    
-    public function testResolvingAManuallyLateBoundObjectReturnsCorrectInstance()
-    {
-        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
-            ->disableOriginalConstructor()
-            ->setMethods(array('load', 'getData'))
-            ->getMockForAbstractClass();
-    
-        $config->expects($this->any())
-            ->method('load')
-            ->will($this->returnValue(array('classes' => array())));
-    
-        $container = ContainerFactory::create($config, array('deferred' => false));
-    
-        $item = new \stdClass();
-    
-        $container->lateBind('boundKey', $item);
-    
-        $item = new \stdClass();
-        
-        $this->assertSame($item, $container->get('boundKey'));
-        
-        $item = new \stdClass();
-        
-        $this->assertSame($item, $container->get('boundKey'));
-    }
 
-    public function testResolvingOutOfScopeLateBoundObjectsReturnsNonNullInstance()
-    {
-        $test = function ($container) {
-            $bla = new \stdClass();
-            $container->lateBind('test', $bla);
-        };
-        
-        $config = $this->getMockBuilder('\DICIT\Config\AbstractConfig')
-            ->disableOriginalConstructor()
-            ->setMethods(array('load', 'getData'))
-            ->getMockForAbstractClass();
-        
-        $config->expects($this->any())
-            ->method('load')
-            ->will($this->returnValue(array('classes' => array())));
-        
-        $container = ContainerFactory::create($config, array('deferred' => false));
-        
-        $test($container);
-        $test = null;
-        
-        $this->assertNotNull($container->get('test'));
-    }
-    
     /**
      * @expectedException \DICIT\IllegalTypeException
      */
@@ -238,7 +187,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->setParameter('dummy.key', function() { });
     }
@@ -257,7 +206,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', 'dummy-key2' => function() {}));
     }
@@ -277,7 +226,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', "sub" => array('dummy-key2' => function() {})));
     }
@@ -297,7 +246,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ->method('load')
             ->will($this->returnValue(array('parameters' => array(), 'classes' => array())));
 
-        $container = ContainerFactory::create($config);
+        $container = new Container($config);
 
         $container->setParameter('dummy.key', array('dummy-key1' =>'value1', "sub" => array('dummy-key2' => new \stdClass())));
     }
@@ -310,7 +259,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = ContainerFactory::createFromInlineYaml($yml);
+        $container = new Container(new \DICIT\Config\YMLInline($yml));
 
         $value = $container->getParameter('dummy.key');
 
@@ -325,7 +274,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = ContainerFactory::createFromInlineYaml($yml);
+        $container = new Container(new \DICIT\Config\YMLInline($yml));
 
         $container->setParameter('dummy.key2', 'dummy-value2');
         $value = $container->getParameter('dummy.key2');
@@ -338,7 +287,7 @@ YML;
 parameters :
 YML;
 
-        $container = ContainerFactory::createFromInlineYaml($yml);
+        $container = new Container(new \DICIT\Config\YMLInline($yml));
         $dbConfig = array("host" => "127.0.0.1", "port" => 5432);
         $container->setParameter('dummy', array('db' => $dbConfig));
         $host = $container->getParameter('dummy.db.host');
@@ -357,7 +306,7 @@ parameters :
         key : dummy-value
 YML;
 
-        $container = ContainerFactory::createFromInlineYaml($yml);
+        $container = new Container(new \DICIT\Config\YMLInline($yml));
         $container->setParameter('dummy', array('db' => array("host" => "127.0.0.1", "port" => 5432)));
         $this->assertSame('dummy-value', $container->getParameter('dummy.key'));
     }
