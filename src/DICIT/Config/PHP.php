@@ -5,11 +5,13 @@ class PHP extends AbstractConfig
 {
     protected $filePath = null;
 
-    public function __construct($filePath) {
+    public function __construct($filePath)
+    {
         $this->filePath = $filePath;
     }
 
-    protected function doLoad() {
+    protected function doLoad()
+    {
         if (file_exists($this->filePath) && is_readable($this->filePath)) {
             $array = include $this->filePath;
             return $array;

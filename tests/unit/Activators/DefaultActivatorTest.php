@@ -41,7 +41,7 @@ class DefaultInvocationActivatorTest extends \PHPUnit_Framework_TestCase
 
     public function testActivationSucceedsWithArgs()
     {
-        $this->container->expects($this->once())
+        $this->container->expects($this->any())
             ->method('resolveMany')
             ->will($this->returnArgument(0));
 

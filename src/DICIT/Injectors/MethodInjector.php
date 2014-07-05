@@ -8,7 +8,8 @@ use DICIT\Container;
 class MethodInjector implements Injector
 {
 
-    public function inject(Container $container, $service, array $serviceConfig) {
+    public function inject(Container $container, $service, array $serviceConfig)
+    {
         $callConfig = array();
 
         if (array_key_exists('call', $serviceConfig)) {

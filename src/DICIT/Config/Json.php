@@ -17,11 +17,12 @@ class Json extends AbstractConfig
     
     protected function loadFile($filePath) {
         $dirname = dirname($filePath);
-        $data = @file_get_contents($filePath);
+        $data = file_get_contents($filePath);
         $data = $data ? json_decode($data, true) : array();
 
         if ($data === null) {
-            throw new InvalidConfigurationException(sprintf('Invalid JSON configuration file "%s" : %s', $filePath, json_last_error_msg()));
+            throw new InvalidConfigurationException(
+                sprintf('Invalid JSON configuration file "%s" : %s', $filePath, json_last_error_msg()));
         }
         
         $data = $this->toArray($data);

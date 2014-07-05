@@ -13,8 +13,10 @@ class ActivatorFactory
 {
 
     private $activators = array();
+    private $activatorsDecorators = array();
 
-    public function __construct($deferActivations = false) {
+    public function __construct($deferActivations = false)
+    {
         $this->addActivator('default', new DefaultActivator(), $deferActivations);
         $this->addActivator('builder-static', new StaticInvocationActivator(), $deferActivations);
         $this->addActivator('builder', new InstanceInvocationActivator(), $deferActivations);
@@ -25,13 +27,17 @@ class ActivatorFactory
      * @param string $key
      * @param boolean $deferredActivations
      */
-    private function addActivator($key, Activator $activator, $deferredActivations)
+    public function addActivator($key, Activator $activator, $deferredActivations)
     {
-        if ($deferredActivations) {
-            $activator = new LazyActivator($activator);
+        if ($activator instanceof ActivatorDecorator) {
+            $this->activatorsDecorators[$key] = $activator;
+        } else {
+            if ($deferredActivations) {
+                $activator = new LazyActivator($activator);
+            }
+    
+            $this->activators[$key] = $activator;
         }
-
-        $this->activators[$key] = $activator;
     }
 
     /**
@@ -43,26 +49,43 @@ class ActivatorFactory
      */
     public function getActivator($serviceName, array $configuration)
     {
+        $activator = null;
+        
         if (array_key_exists('builder', $configuration)) {
             $builderType = $this->getBuilderType($configuration['builder']);
 
             if ('static' == $builderType) {
-                return $this->activators['builder-static'];
+                $activator = $this->activators['builder-static'];
             }
             elseif ('instance' == $builderType) {
-                return $this->activators['builder'];
+                $activator = $this->activators['builder'];
             }
         }
         elseif (array_key_exists('class', $configuration)) {
             if (array_key_exists('remote', $configuration)) {
-                return $this->activators['remote'];
+                $activator =  $this->activators['remote'];
+            } else {
+                $activator =  $this->activators['default'];
             }
-
-            return $this->activators['default'];
         }
 
-        throw new UnbuildableServiceException(sprintf("Unbuildable service : '%s', no suitable activator found.",
-            $serviceName));
+        if ($activator == null) {
+            throw new UnbuildableServiceException(
+                sprintf("Unbuildable service : '%s', no suitable activator found.",$serviceName)
+            );
+        }
+        
+        //Decorating the activators if adequate parameters are present
+        foreach($this->activatorsDecorators as $key=>$decorator) {
+            /* @var $decorator ActivatorDecorator */
+            if (array_key_exists($key, $configuration)) {
+                $dec = clone $decorator;
+                $dec->setNext($activator);
+                $activator = $dec;
+            }
+        }
+        
+        return $activator;
     }
 
     private function getBuilderType($builderKey)
