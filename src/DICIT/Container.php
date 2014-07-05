@@ -60,6 +60,15 @@ class Container
         $this->referenceResolver = new ReferenceResolver($this);
     }
 
+    public function build($definition, $serviceName = null)
+    {
+        if ($serviceName === null) {
+            $serviceName = md5($definition . rand(0, 10000));
+        }
+        
+        return $this->serviceBuilder->buildService($this, $serviceName, $definition);
+    }
+    
     /**
      * Binds an existing object or an object definition to a key in the container.
      * @param string $key The key to which the new object/definition should be bound.
