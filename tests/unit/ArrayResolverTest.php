@@ -43,6 +43,25 @@ class ArrayResolverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('value', $resolver->resolve('key.sub-key'));
     }
 
+    public function testDottedKeyResolutionReturnsCorrectValue()
+    {
+        $data = array('key' => array('sub.key' => 'value'));
+
+        $resolver = new ArrayResolver($data);
+
+        $this->assertEquals('value', $resolver->resolve('key.sub..key'));
+    }
+
+
+    public function testEscapedDottedKeyResolutionReturnsCorrectValue()
+    {
+        $data = array('key' => array('sub..key' => array('resub' => 'value')));
+
+        $resolver = new ArrayResolver($data);
+
+        $this->assertEquals('value', $resolver->resolve('key.sub....key.resub'));
+    }
+
     public function testDottedResolutionOfMissingKeyReturnsCorrectValue()
     {
         $data = array('key' => array());

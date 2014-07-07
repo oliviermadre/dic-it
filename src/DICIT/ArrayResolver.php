@@ -33,6 +33,37 @@ class ArrayResolver implements \Iterator, \Countable, \ArrayAccess
         $toReturn = $default;
         $dotted = explode(".", $key);
 
+        if (strpos($key, '.') !== false) {
+            $s = preg_split('``', $key, -1, PREG_SPLIT_NO_EMPTY);
+            $dotted = array();
+            $sappend = '';
+            while(current($s)) {
+                $scurr = current($s);
+                $snext = next($s);
+
+                if ($scurr == '.') {
+                    if ($snext == '.') {
+                        $sappend .= '.';
+                        next($s);
+                    }
+                    else {
+                        $dotted[] = $sappend;
+                        $sappend = '';
+                    }
+                }
+                else {
+                    $sappend .= $scurr;
+                }
+            }
+
+            if (strlen($sappend)) {
+                $dotted[] = $sappend;
+            }
+        }
+        else {
+            $dotted = array($key);
+        }
+
         if (count($dotted) > 1) {
             $currentDepthData = $this->source;
 
