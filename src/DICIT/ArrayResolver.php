@@ -23,19 +23,54 @@ class ArrayResolver implements \Iterator, \Countable, \ArrayAccess
     /**
      * Resolves a value stored in an array, optionally by using dot notation to access nested elements.
      *
-     * @param string $key
-     *            The key value to resolve.
+     * @param string $key The key value to resolve.
      * @param mixed $default
      * @return mixed The resolved value or the provided default value.
      */
     public function resolve($key, $default = null)
     {
         $toReturn = $default;
-        $dotted = explode(".", $key);
+
+        if (strpos($key, '.') !== false) {
+            $s = preg_split('``', $key, -1, PREG_SPLIT_NO_EMPTY);
+            $dotted = array();
+            $sappend = '';
+            while(current($s)) {
+                $scurr = current($s);
+                $snext = next($s);
+
+                if ($scurr == '\\') {
+                    if ($snext != '\\' && $snext != '.') {
+                        throw new \RuntimeException('A single antislash should be followed by another antislash or a dot');
+                    }
+                    elseif ($snext == '\\') {
+                        $sappend .= '\\';
+                        next($s);
+                    }
+                    else {
+                        $sappend .= $snext;
+                        next($s);
+                    }
+                }
+                elseif($scurr == '.') {
+                    $dotted[] = $sappend;
+                    $sappend = '';
+                }
+                else {
+                    $sappend .= $scurr;
+                }
+            }
+
+            if (strlen($sappend)) {
+                $dotted[] = $sappend;
+            }
+        }
+        else {
+            $dotted = array($key);
+        }
 
         if (count($dotted) > 1) {
             $currentDepthData = $this->source;
-
             foreach ($dotted as $paramKey) {
                 if (array_key_exists($paramKey, $currentDepthData)) {
                     $currentDepthData = $currentDepthData[$paramKey];
