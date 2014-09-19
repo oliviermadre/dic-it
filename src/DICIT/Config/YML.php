@@ -28,6 +28,7 @@ class YML extends AbstractConfig
         foreach($res as $key => $value) {
             if ($key == 'include') {
                 foreach($value as $file) {
+                    $file = preg_replace_callback('`\${env\.([^}]+)}`i', function($matches) { return getenv($matches[1]); }, $file);
                     $subYml = $this->loadFile($dirname . '/' . $file);
                     $yml = Arrays::mergeRecursiveUnique($yml, $subYml);
                 }
