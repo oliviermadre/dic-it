@@ -1,7 +1,7 @@
 {
     "name" : "evaneos/dic-it",
     "description" : "Yet another dependency injection container",
-    "version" : "1.0.0",
+    "version" : "1.0.1",
     "type" : "library",
     "homepage" : "http://github.com/Evaneos/dic-it",
     "time" : "2013-11-01",
