@@ -139,6 +139,16 @@ class Container
         return $value;
     }
 
+    public function has($serviceName)
+    {
+        $serviceConfig = $this->classes->resolve($serviceName, null);
+        if ($serviceConfig) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * Retrieve a class configured in the container
      * @param  string $serviceName
