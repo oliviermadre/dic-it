@@ -15,7 +15,8 @@ class Registry
      * Flush all stored instances from the registry.
      * @return \DICIT\Registry
      */
-    public function flush() {
+    public function flush()
+    {
         $this->data = array();
     }
 
@@ -24,7 +25,8 @@ class Registry
      * @param string $key
      * @return mixed
      */
-    public function get($key, $throwIfNotFound = false) {
+    public function get($key, $throwIfNotFound = false)
+    {
         if ($this->has($key)) {
             return $this->data[$key];
         }
@@ -37,20 +39,22 @@ class Registry
     }
 
     /**
-     * Returns a boolean indicating whether there is an object associated to a given key in the registry. 
+     * Returns a boolean indicating whether there is an object associated to a given key in the registry.
      * @param string $key
      * @return boolean
      */
-    public function has($key) {
+    public function has($key)
+    {
         return array_key_exists($key, $this->data);
     }
-    
+
     /**
      * Stores an object instance in the registry.
      * @param string $key
      * @param mixed $value
      */
-    public function set($key, & $value) {
+    public function set($key, & $value)
+    {
         $this->data[$key] = & $value;
     }
 }

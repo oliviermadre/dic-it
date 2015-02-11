@@ -8,7 +8,8 @@ use DICIT\UnbuildableServiceException;
 class InstanceInvocationActivator implements Activator
 {
 
-    public function createInstance(Container $container, $serviceName, array $serviceConfig) {
+    public function createInstance(Container $container, $serviceName, array $serviceConfig)
+    {
         list($instanceName, $methodName) = explode('->', $serviceConfig['builder']);
 
         $invocationSite = $container->get($instanceName);

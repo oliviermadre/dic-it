@@ -28,8 +28,31 @@ class ReferenceResolverTest extends \PHPUnit_Framework_TestCase
         $reference = '$container';
 
         $resolver = new ReferenceResolver($this->container);
+        $resolverResult = $resolver->resolve($reference);
 
-        $this->assertSame($this->container, $resolver->resolve($reference));
+        $this->assertSame($this->container, $resolverResult);
+    }
+
+    public function testConstantReferenceIsProperlyResolved()
+    {
+        define(md5(__METHOD__), 'foobarbaz');
+        $reference = '$const.' . md5(__METHOD__);
+
+        $resolver = new ReferenceResolver($this->container);
+        $resolverResult = $resolver->resolve($reference);
+
+        $this->assertSame('foobarbaz', $resolverResult);
+    }
+
+
+    public function testEnvReferenceIsProperlyResolved()
+    {
+        putenv(md5(__METHOD__) . '=foobarbaz');
+        $reference = '$env.' . md5(__METHOD__);
+
+        $resolver = new ReferenceResolver($this->container);
+        $resolverResult = $resolver->resolve($reference);
+        $this->assertSame('foobarbaz', $resolverResult);
     }
 
     public function testObjectReferencesAreProperlyResolved()

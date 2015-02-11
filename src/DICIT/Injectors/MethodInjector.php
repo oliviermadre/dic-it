@@ -4,11 +4,13 @@ namespace DICIT\Injectors;
 
 use DICIT\Injector;
 use DICIT\Container;
+use DICIT\UnbuildableServiceException;
 
 class MethodInjector implements Injector
 {
 
-    public function inject(Container $container, $service, array $serviceConfig) {
+    public function inject(Container $container, $service, array $serviceConfig)
+    {
         $callConfig = array();
 
         if (array_key_exists('call', $serviceConfig)) {
@@ -21,7 +23,7 @@ class MethodInjector implements Injector
                     $methodToCall = $matches[1];
                 }
                 else {
-                    throw new \RuntimeException(sprintf("Invalid method name '%s'", $methodName));
+                    throw new UnbuildableServiceException(sprintf("Invalid method name '%s'", $methodName));
                 }
             }
             else {
@@ -29,7 +31,12 @@ class MethodInjector implements Injector
             }
 
             $convertedParameters = $container->resolveMany($parameters);
-            call_user_func_array(array($service, $methodToCall), $convertedParameters);
+            if (method_exists($service, $methodToCall)) {
+                call_user_func_array(array($service, $methodToCall), $convertedParameters);
+            }
+            else {
+                throw new UnbuildableServiceException(sprintf("Couldn't call method '%s' in '%s', method doesn't exist", $methodToCall, get_class($service)));
+            }
         }
 
         return true;

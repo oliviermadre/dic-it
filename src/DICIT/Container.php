@@ -1,6 +1,8 @@
 <?php
 namespace DICIT;
 
+use \DICIT\Util\Arrays;
+
 class Container
 {
     /**
@@ -79,7 +81,8 @@ class Container
      * If $item is an object, it will be registered as a singleton in the
      * object registry. Otherwise, $item will be handled as an object definition.
      */
-    public function bind($key, $item) {
+    public function bind($key, $item)
+    {
         if (is_array($item)) {
             $this->classes[$key] = $item;
         }
@@ -93,7 +96,8 @@ class Container
      * @param [type] $key   [description]
      * @param [type] $value [description]
      */
-    public function setParameter($key, $value) {
+    public function setParameter($key, $value)
+    {
         $path = explode('.', $key);
 
         $this->validateParameter($key, $value);
@@ -115,7 +119,7 @@ class Container
             $parameters = array();
         }
 
-        $this->parameters = new ArrayResolver(array_merge_recursive($parameters, $r));
+        $this->parameters = new ArrayResolver(Arrays::mergeRecursiveUnique($parameters, $r));
         return $this;
     }
 
@@ -124,7 +128,8 @@ class Container
      * @param  string $parameterName
      * @return mixed
      */
-    public function getParameter($parameterName) {
+    public function getParameter($parameterName)
+    {
         $value = $this->parameters->resolve($parameterName);
 
         if ($value instanceof ArrayResolver) {
@@ -134,12 +139,23 @@ class Container
         return $value;
     }
 
+    public function has($serviceName)
+    {
+        $serviceConfig = $this->classes->resolve($serviceName, null);
+        if ($serviceConfig) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * Retrieve a class configured in the container
      * @param  string $serviceName
      * @return object
      */
-    public function get($serviceName) {
+    public function get($serviceName)
+    {
         if ($this->registry->has($serviceName)) {
             return $this->registry->get($serviceName);
         }
@@ -161,7 +177,8 @@ class Container
     }
 
 
-    public function resolve($reference) {
+    public function resolve($reference)
+    {
         return $this->referenceResolver->resolve($reference);
     }
 
@@ -170,7 +187,8 @@ class Container
      * @param array $references
      * @return array containing all the resolved references
      */
-    public function resolveMany(array $references = null) {
+    public function resolveMany(array $references = null)
+    {
         if ($references === null) {
             return array();
         }
@@ -182,7 +200,8 @@ class Container
      * Flush the registry
      * @return Container
      */
-    public function flushRegistry() {
+    public function flushRegistry()
+    {
         $this->registry->flush();
         return $this;
     }
@@ -193,7 +212,8 @@ class Container
      * @param string $serviceName
      * @return object
      */
-    protected function loadService($serviceName, $serviceConfig) {
+    protected function loadService($serviceName, $serviceConfig)
+    {
         $isSingleton = false;
 
         if (array_key_exists('singleton', $serviceConfig)) {
@@ -219,7 +239,8 @@ class Container
      * @param string $serviceName
      * @return object
      */
-    protected function activate($serviceName, $serviceConfig) {
+    protected function activate($serviceName, $serviceConfig)
+    {
         $activator = $this->activatorFactory->getActivator($serviceName, $serviceConfig);
 
         return $activator->createInstance($this, $serviceName, $serviceConfig);
@@ -231,7 +252,8 @@ class Container
      * @param  array $serviceConfig
      * @return boolean
      */
-    protected function inject($class, $serviceConfig) {
+    protected function inject($class, $serviceConfig)
+    {
         $injectors = $this->injectorFactory->getInjectors();
 
         foreach ($injectors as $injector) {
@@ -247,7 +269,8 @@ class Container
      * @param  array $serviceConfig
      * @return object
      */
-    protected function encapsulate($class, $serviceConfig) {
+    protected function encapsulate($class, $serviceConfig)
+    {
         $encapsulators = $this->encapsulatorFactory->getEncapsulators();
 
         foreach ($encapsulators as $encapsulator) {
@@ -266,7 +289,8 @@ class Container
      * @throws IllegalTypeException
      *
      */
-    protected function validateParameter($key, $value) {
+    protected function validateParameter($key, $value)
+    {
         if (is_scalar($value)) {
             return true;
         }
