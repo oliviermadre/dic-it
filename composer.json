@@ -36,5 +36,10 @@
         "zendframework/zend-json" : "To support JSON-RPC remote object activation",
         "zendframework/zend-soap" : "To support SOAP remote object activation",
         "guzzle/guzzle" : "To support RESTful remote object activation"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.2.x-dev"
+        }
     }
 }
