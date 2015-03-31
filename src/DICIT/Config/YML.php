@@ -20,6 +20,9 @@ class YML extends AbstractConfig
 
     protected function loadFile($filePath)
     {
+        if (!is_file($filePath)) {
+            throw new \Exception('File not found: ' . $filePath);
+        }
         $yml = array();
         $dirname = dirname($filePath);
         $yaml = new \Symfony\Component\Yaml\Yaml();
