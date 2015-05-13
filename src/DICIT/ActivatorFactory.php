@@ -56,12 +56,10 @@ class ActivatorFactory
 
             if ('static' == $builderType) {
                 $activator = $this->activators['builder-static'];
-            }
-            elseif ('instance' == $builderType) {
+            } elseif ('instance' == $builderType) {
                 $activator = $this->activators['builder'];
             }
-        }
-        elseif (array_key_exists('class', $configuration)) {
+        } elseif (array_key_exists('class', $configuration)) {
             if (array_key_exists('remote', $configuration)) {
                 $activator =  $this->activators['remote'];
             } else {
@@ -71,12 +69,12 @@ class ActivatorFactory
 
         if ($activator == null) {
             throw new UnbuildableServiceException(
-                sprintf("Unbuildable service : '%s', no suitable activator found.",$serviceName)
+                sprintf("Unbuildable service : '%s', no suitable activator found.", $serviceName)
             );
         }
         
         //Decorating the activators if adequate parameters are present
-        foreach($this->activatorsDecorators as $key=>$decorator) {
+        foreach ($this->activatorsDecorators as $key=>$decorator) {
             /* @var $decorator ActivatorDecorator */
             if (array_key_exists($key, $configuration)) {
                 $dec = clone $decorator;
@@ -92,8 +90,7 @@ class ActivatorFactory
     {
         if (false !== strpos($builderKey, '::')) {
             return 'static';
-        }
-        elseif (false !== strpos($builderKey, '->')) {
+        } elseif (false !== strpos($builderKey, '->')) {
             return 'instance';
         }
 

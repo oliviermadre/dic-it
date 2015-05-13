@@ -23,8 +23,7 @@ class DefaultActivator implements Activator
 
         if (! empty($activationArgs)) {
             $instance = $class->newInstanceArgs($activationArgs);
-        }
-        else {
+        } else {
             $instance = $class->newInstance();
         }
 

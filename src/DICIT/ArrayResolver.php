@@ -45,8 +45,7 @@ class ArrayResolver implements \Iterator, \Countable, \ArrayAccess
             }
 
             return $this->wrapIfNecessary($currentDepthData);
-        }
-        elseif (array_key_exists($key, $this->source)) {
+        } elseif (array_key_exists($key, $this->source)) {
             $toReturn = $this->source[$key];
         }
 

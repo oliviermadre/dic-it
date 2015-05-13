@@ -43,8 +43,7 @@ class RestAdapter implements AdapterInterface
             $ret['login'] = $this->get($config, 'login', '');
             $ret['pass'] = $this->get($config, 'pass', '');
             return $ret;
-        }
-        else {
+        } else {
             return null;
         }
     }

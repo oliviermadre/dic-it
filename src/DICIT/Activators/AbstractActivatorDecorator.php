@@ -29,7 +29,6 @@ class AbstractActivatorDecorator implements ActivatorDecorator
 
     protected function before(Container $container, &$serviceName, array &$serviceConfig)
     {
-
     }
 
     protected function after(Container $container, &$serviceName, array &$serviceConfig, $returnObject)

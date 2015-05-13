@@ -25,8 +25,7 @@ class LazyActivator implements Activator
 
         $proxy = $factory->createProxy($serviceConfig['class'],
             function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) use ($activator, $container,
-            $serviceName, $serviceConfig)
-            {
+            $serviceName, $serviceConfig) {
                 $wrappedObject = $activator->createInstance($container, $serviceName, $serviceConfig);
                 $initializer = null;
 

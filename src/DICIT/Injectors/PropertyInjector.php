@@ -15,7 +15,7 @@ class PropertyInjector implements Injector
             $propConfig = $serviceConfig['props'];
         }
 
-        foreach($propConfig as $propName => $propValue) {
+        foreach ($propConfig as $propName => $propValue) {
             $convertedValue = $container->resolve($propValue);
             $service->$propName = $convertedValue;
         }

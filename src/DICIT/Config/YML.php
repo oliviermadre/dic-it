@@ -28,15 +28,14 @@ class YML extends AbstractConfig
         $yaml = new \Symfony\Component\Yaml\Yaml();
         $res = $yaml->parse($filePath);
 
-        foreach($res as $key => $value) {
+        foreach ($res as $key => $value) {
             if ($key == 'include') {
-                foreach($value as $file) {
-                    $file = preg_replace_callback('`\${env\.([^}]+)}`i', function($matches) { return getenv($matches[1]); }, $file);
+                foreach ($value as $file) {
+                    $file = preg_replace_callback('`\${env\.([^}]+)}`i', function ($matches) { return getenv($matches[1]); }, $file);
                     $subYml = $this->loadFile($dirname . '/' . $file);
                     $yml = Arrays::mergeRecursiveUnique($yml, $subYml);
                 }
-            }
-            else {
+            } else {
                 $yml = Arrays::mergeRecursiveUnique($yml, array($key => $res[$key]));
             }
         }
