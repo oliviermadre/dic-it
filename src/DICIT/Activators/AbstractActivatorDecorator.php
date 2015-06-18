@@ -44,4 +44,17 @@ class AbstractActivatorDecorator implements ActivatorDecorator
 
         return null;
     }
+
+    /**
+     * @param array $serviceConfig
+     * @return mixed
+     */
+    public function canActivate(array $serviceConfig)
+    {
+        if($this->wrappedActivator) {
+            return $this->wrappedActivator->canActivate($serviceConfig);
+        }
+
+        return false;
+    }
 }
