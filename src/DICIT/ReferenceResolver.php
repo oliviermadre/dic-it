@@ -49,7 +49,11 @@ class ReferenceResolver
      */
     public function proxify($serviceName)
     {
-        $factory = new LazyLoadingValueHolderFactory($this->container->get('OcramiusCacheConfiguration'));
+        $lazyConfig = null;
+        if ($this->container->has('OcramiusCacheConfiguration')) {
+            $lazyConfig = $this->container->get('OcramiusCacheConfiguration');
+        }
+        $factory = new LazyLoadingValueHolderFactory($lazyConfig);
         $container = $this->container;
 
         $serviceConfigObject = $container->getServiceConfig($serviceName);
@@ -58,8 +62,10 @@ class ReferenceResolver
             $serviceConfig = $serviceConfigObject->extract();
         }
 
-        if(!array_key_exists('class', $serviceConfig)) {
-            throw new UnbuildableServiceException(sprintf("Can't make a proxified instance for service '%s'", $serviceName));
+        if (!array_key_exists('class', $serviceConfig)) {
+            throw new UnbuildableServiceException(
+                sprintf("Can't make a proxified instance for service '%s'", $serviceName)
+            );
         }
 
         $proxy = $factory->createProxy(
