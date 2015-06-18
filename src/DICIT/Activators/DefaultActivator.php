@@ -29,4 +29,13 @@ class DefaultActivator implements Activator
 
         return $instance;
     }
+
+    /**
+     * @param array $serviceConfig
+     * @return mixed
+     */
+    public function canActivate(array $serviceConfig)
+    {
+        return array_key_exists('class', $serviceConfig);
+    }
 }

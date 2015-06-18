@@ -59,16 +59,18 @@ class Container
      * @param ActivatorFactory $activatorFactory
      * @param InjectorFactory $injectorFactory
      */
-    public function __construct(Config\AbstractConfig $cfg,
-        ActivatorFactory $activatorFactory = null, InjectorFactory $injectorFactory = null)
-    {
+    public function __construct(
+        Config\AbstractConfig $cfg,
+        ActivatorFactory $activatorFactory = null,
+        InjectorFactory $injectorFactory = null
+    ) {
         $this->registry = new Registry();
         $this->config = new ArrayResolver($cfg->load());
 
         $this->parameters = $this->config->resolve('parameters', array());
         $this->classes = $this->config->resolve('classes', array());
 
-        $this->activatorFactory = $activatorFactory ?: new ActivatorFactory();
+        $this->activatorFactory = $activatorFactory ?: new ActivatorFactoryPrebuilt();
         $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
@@ -94,6 +96,7 @@ class Container
      * Set a parameter in the container on any key
      * @param [type] $key   [description]
      * @param [type] $value [description]
+     * @return $this
      */
     public function setParameter($key, $value)
     {
@@ -158,19 +161,28 @@ class Container
             return $this->registry->get($serviceName);
         }
 
-        $serviceConfig = $this->classes->resolve($serviceName, null);
+        $serviceConfig = $this->getServiceConfig($serviceName);
 
         if ($serviceConfig == null) {
-            throw new \DICIT\UnknownDefinitionException($serviceName);
+            throw new UnknownDefinitionException($serviceName);
         }
 
         try {
             return $this->loadService($serviceName, $serviceConfig->extract());
-        } catch (\DICIT\UnknownDefinitionException $ex) {
+        } catch (UnknownDefinitionException $ex) {
             throw new \RuntimeException(
-                sprintf("Dependency '%s' not found while trying to build '%s'.",
-                    $ex->getServiceName(), $serviceName));
+                sprintf(
+                    "Dependency '%s' not found while trying to build '%s'.",
+                    $ex->getServiceName(),
+                    $serviceName
+                )
+            );
         }
+    }
+
+    public function getServiceConfig($serviceName)
+    {
+        return $this->classes->resolve($serviceName, null);
     }
 
 
@@ -212,6 +224,7 @@ class Container
     protected function loadService($serviceName, $serviceConfig)
     {
         $isSingleton = false;
+        $isLazy = false;
 
         if (array_key_exists('singleton', $serviceConfig)) {
             $isSingleton = (bool)$serviceConfig['singleton'];
@@ -224,8 +237,14 @@ class Container
             $this->registry->set($serviceName, $class);
         }
 
-        $this->inject($class, $serviceConfig);
-        $class = $this->encapsulate($class, $serviceConfig);
+        if (array_key_exists('lazy', $serviceConfig)) {
+            $isLazy = (bool)$serviceConfig['lazy'];
+        }
+
+        if (!$isLazy) {
+            $this->inject($class, $serviceConfig);
+            $class = $this->encapsulate($class, $serviceConfig);
+        }
 
         return $class;
     }
@@ -249,8 +268,9 @@ class Container
      * @param  array $serviceConfig
      * @return boolean
      */
-    protected function inject($class, $serviceConfig)
+    public function inject($class, $serviceConfig)
     {
+        /** @var Injector[] $injectors */
         $injectors = $this->injectorFactory->getInjectors();
 
         foreach ($injectors as $injector) {
@@ -266,8 +286,9 @@ class Container
      * @param  array $serviceConfig
      * @return object
      */
-    protected function encapsulate($class, $serviceConfig)
+    public function encapsulate($class, $serviceConfig)
     {
+        /** @var Encapsulator[] $encapsulators */
         $encapsulators = $this->encapsulatorFactory->getEncapsulators();
 
         foreach ($encapsulators as $encapsulator) {
@@ -300,7 +321,8 @@ class Container
             array_walk_recursive($value, function ($item, $k) use ($key) {
                 if (!is_scalar($item)) {
                     throw new IllegalTypeException(
-                        sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key));
+                        sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key)
+                    );
                 }
             });
         }
