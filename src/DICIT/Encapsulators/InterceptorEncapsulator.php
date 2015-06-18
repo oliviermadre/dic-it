@@ -15,8 +15,7 @@ class InterceptorEncapsulator implements Encapsulator
 
                 if (! is_object($interceptor)) {
                     throw new \RuntimeException(
-                        'The interceptor ' . $interceptorName . ' does not reference a known service'
-                    );
+                        'The interceptor ' . $interceptorName . ' does not reference a known service');
                 }
 
                 $interceptor->setDecorated($object);

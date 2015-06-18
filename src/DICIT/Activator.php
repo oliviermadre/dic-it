@@ -11,10 +11,4 @@ interface Activator
      * @param array $serviceConfig
      */
     public function createInstance(Container $container, $serviceName, array $serviceConfig);
-
-    /**
-     * @param array $serviceConfig
-     * @return mixed
-     */
-    public function canActivate(array $serviceConfig);
 }

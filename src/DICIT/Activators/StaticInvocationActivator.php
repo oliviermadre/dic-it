@@ -23,19 +23,4 @@ class StaticInvocationActivator implements Activator
 
         return call_user_func_array(array($className, $methodName), $activationArgs);
     }
-
-    /**
-     * @param array $serviceConfig
-     * @return mixed
-     */
-    public function canActivate(array $serviceConfig)
-    {
-        if (array_key_exists('builder', $serviceConfig)) {
-            if (strpos($serviceConfig['builder'], '::') !== false) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
