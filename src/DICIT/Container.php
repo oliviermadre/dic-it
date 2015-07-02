@@ -54,6 +54,11 @@ class Container
     protected $referenceResolver = null;
 
     /**
+     * @var \ProxyManager\Configuration|null
+     */
+    protected $lazyConfig = null;
+
+    /**
      *
      * @param Config\AbstractConfig $cfg
      * @param ActivatorFactory $activatorFactory
@@ -74,6 +79,9 @@ class Container
         $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
         $this->encapsulatorFactory = new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
+
+        $this->lazyConfig = new \ProxyManager\Configuration();
+        spl_autoload_register($this->lazyConfig->getProxyAutoloader());
     }
 
     /**
@@ -95,6 +103,21 @@ class Container
     public function getRegistry()
     {
         return $this->registry;
+    }
+
+    public function setLazyConfig($lazyCachePath)
+    {
+        spl_autoload_unregister($this->lazyConfig->getProxyAutoloader());
+        $this->lazyConfig = new ProxyManager\Configuration();
+        $this->lazyConfig->setProxiesTargetDir($lazyCachePath);
+        spl_autoload_register($this->lazyConfig->getProxyAutoloader());
+
+        return $this;
+    }
+
+    public function getLazyConfig()
+    {
+        return $this->lazyConfig;
     }
 
     /**

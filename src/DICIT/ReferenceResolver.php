@@ -70,10 +70,7 @@ class ReferenceResolver
             );
         }
 
-        $lazyConfig = null;
-        if ($this->container->has('OcramiusCacheConfiguration')) {
-            $lazyConfig = $this->container->get('OcramiusCacheConfiguration');
-        }
+        $lazyConfig = $this->container->getLazyConfig();
         $factory = new LazyLoadingValueHolderFactory($lazyConfig);
 
         $proxy = $factory->createProxy(
