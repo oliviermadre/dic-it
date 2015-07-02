@@ -92,6 +92,11 @@ class Container
         }
     }
 
+    public function getRegistry()
+    {
+        return $this->registry;
+    }
+
     /**
      * Set a parameter in the container on any key
      * @param [type] $key   [description]

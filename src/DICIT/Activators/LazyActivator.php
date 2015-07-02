@@ -45,6 +45,6 @@ class LazyActivator implements Activator
      */
     public function canActivate(array $serviceConfig)
     {
-            return $this->activator->canActivate($serviceConfig);
+        return $this->activator->canActivate($serviceConfig);
     }
 }

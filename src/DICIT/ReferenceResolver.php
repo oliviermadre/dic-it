@@ -49,17 +49,19 @@ class ReferenceResolver
      */
     public function proxify($serviceName)
     {
-        $lazyConfig = null;
-        if ($this->container->has('OcramiusCacheConfiguration')) {
-            $lazyConfig = $this->container->get('OcramiusCacheConfiguration');
-        }
-        $factory = new LazyLoadingValueHolderFactory($lazyConfig);
         $container = $this->container;
 
         $serviceConfigObject = $container->getServiceConfig($serviceName);
         $serviceConfig = array();
+
         if ($serviceConfigObject) {
             $serviceConfig = $serviceConfigObject->extract();
+        }
+
+        $isSingleton = array_key_exists('singleton', $serviceConfig) && (bool)$serviceConfig['singleton'];
+
+        if ($isSingleton && $this->container->getRegistry()->has($serviceName)) {
+            return $this->container->getRegistry()->get($serviceName);
         }
 
         if (!array_key_exists('class', $serviceConfig)) {
@@ -67,6 +69,12 @@ class ReferenceResolver
                 sprintf("Can't make a proxified instance for service '%s'", $serviceName)
             );
         }
+
+        $lazyConfig = null;
+        if ($this->container->has('OcramiusCacheConfiguration')) {
+            $lazyConfig = $this->container->get('OcramiusCacheConfiguration');
+        }
+        $factory = new LazyLoadingValueHolderFactory($lazyConfig);
 
         $proxy = $factory->createProxy(
             $serviceConfig['class'],
@@ -76,6 +84,10 @@ class ReferenceResolver
                 return true;
             }
         );
+
+        if ($isSingleton) {
+            $this->container->getRegistry()->set($serviceName, $proxy);
+        }
 
         return $proxy;
     }
