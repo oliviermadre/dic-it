@@ -32,7 +32,7 @@ class DefaultActivator implements Activator
 
     /**
      * @param array $serviceConfig
-     * @return mixed
+     * @return bool
      */
     public function canActivate(array $serviceConfig)
     {

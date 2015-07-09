@@ -2,6 +2,13 @@
 namespace DICIT\Activators;
 
 use DICIT\Activators\Remote\RestAdapter;
+use Guzzle\Http\Client as GuzzleHttpClient;
+use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
+use ProxyManager\Factory\RemoteObject\Adapter\Soap;
+use ProxyManager\Factory\RemoteObject\Adapter\XmlRpc;
+use Zend\Json\Server\Client as JsonServerClient;
+use Zend\Soap\Client as SoapClient;
+use Zend\XmlRpc\Client as XmlRpcClient;
 
 class RemoteAdapterFactory
 {
@@ -25,13 +32,13 @@ class RemoteAdapterFactory
 
         switch ($protocol) {
             case 'xml-rpc':
-                return new \ProxyManager\Factory\RemoteObject\Adapter\XmlRpc(new \Zend\XmlRpc\Client($endpoint));
+                return new XmlRpc(new XmlRpcClient($endpoint));
             case 'json-rpc':
-                return new \ProxyManager\Factory\RemoteObject\Adapter\JsonRpc(new \Zend\Json\Server\Client($endpoint));
+                return new JsonRpc(new JsonServerClient($endpoint));
             case 'soap':
-                return new \ProxyManager\Factory\RemoteObject\Adapter\Soap(new \Zend\Soap\Client($endpoint));
+                return new Soap(new SoapClient($endpoint));
             case 'rest':
-                return new RestAdapter(new \Guzzle\Http\Client($endpoint));
+                return new RestAdapter(new GuzzleHttpClient($endpoint));
             default:
                 throw new UnknownProtocolException(sprintf("Protocol '%s' is not supported ", $protocol));
         }

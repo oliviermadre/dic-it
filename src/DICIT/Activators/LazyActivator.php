@@ -4,6 +4,7 @@ namespace DICIT\Activators;
 use DICIT\Activator;
 use DICIT\Container;
 use ProxyManager\Configuration;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 
 class LazyActivator implements Activator
 {
@@ -23,7 +24,7 @@ class LazyActivator implements Activator
         }
 
         $activator = $this->activator;
-        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($this->configuration);
+        $factory = new LazyLoadingValueHolderFactory($this->configuration);
 
         $proxy = $factory->createProxy(
             $serviceConfig['class'],

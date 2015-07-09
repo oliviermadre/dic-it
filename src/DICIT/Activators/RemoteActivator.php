@@ -6,6 +6,7 @@ use DICIT\Container;
 use DICIT\UnbuildableServiceException;
 use DICIT\Util\ParamsResolver;
 use ProxyManager\Configuration;
+use ProxyManager\Factory\RemoteObjectFactory;
 
 class RemoteActivator implements Activator
 {
@@ -31,7 +32,7 @@ class RemoteActivator implements Activator
         $convertedRemoteConfig = ParamsResolver::resolveParams($container, $remoteConfig);
 
         $adapter = $this->adapterFactory->getAdapter($serviceName, $convertedRemoteConfig);
-        $factory = new \ProxyManager\Factory\RemoteObjectFactory($adapter, $this->configuration);
+        $factory = new RemoteObjectFactory($adapter, $this->configuration);
 
         return $factory->createProxy($className);
     }
