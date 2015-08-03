@@ -2,6 +2,7 @@
 
 namespace DICIT;
 
+use DICIT\Exception\UnbuildableServiceException;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 
 class ReferenceResolver
@@ -11,7 +12,7 @@ class ReferenceResolver
     const CONSTANT_REGEXP     = '`^\$const\.(.*)$`i';
     /**
      *
-     * @var Container
+     * @var ContainerImpl
      */
     private $container;
 

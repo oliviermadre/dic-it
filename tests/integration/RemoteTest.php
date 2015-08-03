@@ -23,7 +23,7 @@ interface FooServiceInterface
 
 // Getting config using YML
 $cfgYML = new \DICIT\Config\YML(ROOT_DIR . '/tests/integration/config/remote_test.yml');
-$container = new \DICIT\Container($cfgYML);
+$container = new \DICIT\ContainerImpl($cfgYML);
 
 $service = $container->get('RemoteService');
 echo $service->foo('js is crap', 'real crap');

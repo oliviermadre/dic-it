@@ -1,6 +1,6 @@
 <?php
 
-namespace DICIT;
+namespace DICIT\Exception;
 
 class IllegalTypeException extends \RuntimeException
 {

@@ -1,5 +1,6 @@
 <?php
 namespace DICIT;
+use RuntimeException;
 
 /**
  * Registry for storing built object instances.
@@ -30,7 +31,7 @@ class Registry
         if ($this->has($key)) {
             return $this->data[$key];
         } elseif ($throwIfNotFound) {
-            throw new \RuntimeException('Key ' . $key . ' not found in DI Container registry');
+            throw new RuntimeException('Key ' . $key . ' not found in DI Container registry');
         } else {
             return null;
         }

@@ -1,6 +1,8 @@
 <?php
 
-namespace DICIT;
+namespace DICIT\Activators;
+
+use DICIT\Container;
 
 interface Activator
 {

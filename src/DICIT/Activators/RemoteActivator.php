@@ -1,9 +1,8 @@
 <?php
 namespace DICIT\Activators;
 
-use DICIT\Activator;
 use DICIT\Container;
-use DICIT\UnbuildableServiceException;
+use DICIT\Exception\UnbuildableServiceException;
 use DICIT\Util\ParamsResolver;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\RemoteObjectFactory;

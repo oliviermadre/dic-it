@@ -16,7 +16,7 @@ class DefaultInvocationActivatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \DICIT\UnbuildableServiceException
+     * @expectedException \DICIT\Exception\UnbuildableServiceException
      */
     public function testActicationFailsWithMissingClass()
     {

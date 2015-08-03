@@ -1,46 +1,72 @@
 <?php
 namespace DICIT\Activators;
 
-use DICIT\Activators\Remote\RestAdapter;
-use Guzzle\Http\Client as GuzzleHttpClient;
-use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
-use ProxyManager\Factory\RemoteObject\Adapter\Soap;
-use ProxyManager\Factory\RemoteObject\Adapter\XmlRpc;
-use Zend\Json\Server\Client as JsonServerClient;
-use Zend\Soap\Client as SoapClient;
-use Zend\XmlRpc\Client as XmlRpcClient;
+use DICIT\Activators\Remote\RemoteAdapterBuilder;
+use DICIT\Exception\UnknownProtocolException;
+use InvalidArgumentException;
+use ProxyManager\Factory\RemoteObject\AdapterInterface;
 
 class RemoteAdapterFactory
 {
+    /**
+     * @var RemoteAdapterBuilder[]
+     */
+    protected $adapterBuilders = array();
 
     /**
      *
      * @param string $serviceName
      * @param array $serviceConfig
-     * @throws \BadMethodCallException
-     * @return \ProxyManager\Factory\RemoteObject\AdapterInterface
+     * @throws InvalidArgumentException
+     * @throws UnknownProtocolException
+     * @return AdapterInterface
      */
     public function getAdapter($serviceName, array $serviceConfig)
     {
-        if (! isset($serviceConfig['protocol']) || ! isset($serviceConfig['endpoint'])) {
-            throw new \InvalidArgumentException(
-                sprintf("Protocol and endpoint are required for remote object '%s'", $serviceName));
+        if (! isset($serviceConfig['protocol'])) {
+            throw new InvalidArgumentException (
+                sprintf("Protocol is required for remote object '%s'", $serviceName));
         }
 
         $protocol = $serviceConfig['protocol'];
-        $endpoint = $serviceConfig['endpoint'];
 
-        switch ($protocol) {
-            case 'xml-rpc':
-                return new XmlRpc(new XmlRpcClient($endpoint));
-            case 'json-rpc':
-                return new JsonRpc(new JsonServerClient($endpoint));
-            case 'soap':
-                return new Soap(new SoapClient($endpoint));
-            case 'rest':
-                return new RestAdapter(new GuzzleHttpClient($endpoint));
-            default:
-                throw new UnknownProtocolException(sprintf("Protocol '%s' is not supported ", $protocol));
+        $adapterBuilder = $this->fetchAdapterBuilder($protocol);
+
+        return $adapterBuilder->build($serviceName, $serviceConfig);
+    }
+
+    /**
+     * @param $protocolName
+     * @param RemoteAdapterBuilder $adapterBuilder
+     * @return $this
+     */
+    public function addAdapterBuilder($protocolName, RemoteAdapterBuilder $adapterBuilder)
+    {
+        $this->adapterBuilders[$protocolName] = $adapterBuilder;
+        return $this;
+    }
+
+    /**
+     * @param $protocol
+     * @return RemoteAdapterBuilder
+     */
+    protected function fetchAdapterBuilder($protocol)
+    {
+        // Try to use the adapter using the key of the adapter builder storage
+        if (array_key_exists($protocol, $this->adapterBuilders)) {
+            $adapterBuilder = $this->adapterBuilders[$protocol];
+            if ($adapterBuilder->canBuild($protocol)) {
+                return $adapterBuilder;
+            }
         }
+
+        // Try to find any fallback that may handle the protocol
+        foreach ($this->adapterBuilders as $adapterBuilder) {
+            if ($adapterBuilder->canBuild($protocol)) {
+                return $adapterBuilder;
+            }
+        }
+
+        throw new UnknownProtocolException(sprintf("Protocol '%s' is not supported", $protocol));
     }
 }

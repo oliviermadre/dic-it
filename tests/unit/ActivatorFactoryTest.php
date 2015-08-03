@@ -1,9 +1,10 @@
 <?php
 namespace DICIT\Tests;
 
-use DICIT\ActivatorFactory;
+use DICIT\ActivatorFactoryPrebuilt;
+use PHPUnit_Framework_TestCase;
 
-class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
+class ActivatorFactoryTest extends PHPUnit_Framework_TestCase
 {
 
     public function getInvalidServiceConfigurations()
@@ -16,11 +17,11 @@ class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getInvalidServiceConfigurations
-     * @expectedException \DICIT\UnbuildableServiceException
+     * @expectedException \DICIT\Exception\UnbuildableServiceException
      */
     public function testGetActivatorThrowsExceptionForInvalidConfigurations($serviceConfig)
     {
-        $factory = new ActivatorFactory();
+        $factory = new ActivatorFactoryPrebuilt();
 
         $factory->getActivator('myService', $serviceConfig);
     }
@@ -29,7 +30,7 @@ class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceConfig = array('class' => '\DummyClass', 'builder' => '\DummyBuilder::dummyFactoryMethod');
 
-        $factory = new ActivatorFactory();
+        $factory = new ActivatorFactoryPrebuilt();
 
         $this->assertInstanceOf('\DICIT\Activators\StaticInvocationActivator',
             $factory->getActivator('myService', $serviceConfig));
@@ -39,7 +40,7 @@ class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceConfig = array('class' => '\DummyClass', 'builder' => '@DummyBuilder->dummyFactoryMethod');
 
-        $factory = new ActivatorFactory();
+        $factory = new ActivatorFactoryPrebuilt();
 
         $this->assertInstanceOf('\DICIT\Activators\InstanceInvocationActivator',
             $factory->getActivator('myService', $serviceConfig));
@@ -49,7 +50,7 @@ class ActivatorFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $serviceConfig = array('class' => '\DummyClass', 'remote' => array());
 
-        $factory = new ActivatorFactory();
+        $factory = new ActivatorFactoryPrebuilt();
 
         $this->assertInstanceOf('\DICIT\Activators\RemoteActivator',
             $factory->getActivator('myService', $serviceConfig));

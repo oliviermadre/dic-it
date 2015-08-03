@@ -1,9 +1,8 @@
 <?php
 namespace DICIT\Activators;
 
-use DICIT\Activator;
 use DICIT\Container;
-use DICIT\UnbuildableServiceException;
+use DICIT\Exception\UnbuildableServiceException;
 
 class StaticInvocationActivator implements Activator
 {

@@ -2,6 +2,7 @@
 namespace DICIT\Config;
 
 use DICIT\Util\Arrays;
+use Symfony\Component\Yaml\Yaml;
 
 class YML extends AbstractConfig
 {
@@ -25,7 +26,7 @@ class YML extends AbstractConfig
         }
         $yml = array();
         $dirname = dirname($filePath);
-        $yaml = new \Symfony\Component\Yaml\Yaml();
+        $yaml = new Yaml();
         $res = $yaml->parse(file_get_contents($filePath));
 
         foreach ($res as $key => $value) {

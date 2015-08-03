@@ -2,7 +2,6 @@
 
 namespace DICIT\Injectors;
 
-use DICIT\Injector;
 use DICIT\Container;
 
 class PropertyInjector implements Injector

@@ -1,7 +1,6 @@
 <?php
 namespace DICIT\Activators;
 
-use DICIT\Activator;
 use DICIT\Container;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
@@ -15,6 +14,11 @@ class LazyActivator implements Activator
     {
         $this->activator = $activator;
         $this->configuration = $configuration;
+    }
+
+    public function getWrappedInstance()
+    {
+        return $this->activator;
     }
 
     public function createInstance(Container $container, $serviceName, array $serviceConfig)

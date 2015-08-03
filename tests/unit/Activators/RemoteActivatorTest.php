@@ -17,7 +17,7 @@ class RemoteActivatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getInvalidConfigurations
-     * @expectedException \DICIT\UnbuildableServiceException
+     * @expectedException \DICIT\Exception\UnbuildableServiceException
      */
     public function testInvalidConfigurationThrowsException($serviceConfig)
     {

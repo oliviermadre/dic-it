@@ -1,6 +1,8 @@
 <?php
 
-namespace DICIT;
+namespace DICIT\Encapsulators;
+
+use DICIT\Container;
 
 interface Encapsulator
 {

@@ -2,6 +2,7 @@
 
 namespace DICIT\Activators\Remote;
 
+use Guzzle\Http\ClientInterface;
 use ProxyManager\Factory\RemoteObject\AdapterInterface;
 
 class RestAdapter implements AdapterInterface
@@ -9,13 +10,13 @@ class RestAdapter implements AdapterInterface
 
     /**
      *
-     * @var \Guzzle\Http\ClientInterface
+     * @var ClientInterface
      */
     private $client;
 
     private $auth = array();
 
-    public function __construct(\Guzzle\Http\ClientInterface $client, array $auth = array())
+    public function __construct(ClientInterface $client, array $auth = array())
     {
         $this->client = $client;
         $this->auth = $auth;

@@ -2,8 +2,9 @@
 namespace DICIT\Tests\Activators;
 
 use DICIT\Activators\StaticInvocationActivator;
+use PHPUnit_Framework_TestCase;
 
-class StaticInvocationActivatorTest extends \PHPUnit_Framework_TestCase
+class StaticInvocationActivatorTest extends PHPUnit_Framework_TestCase
 {
 
     protected static $service;
@@ -25,7 +26,7 @@ class StaticInvocationActivatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \DICIT\UnbuildableServiceException
+     * @expectedException \DICIT\Exception\UnbuildableServiceException
      */
     public function testActicationFailsWithMissingClass()
     {
@@ -36,7 +37,7 @@ class StaticInvocationActivatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \DICIT\UnbuildableServiceException
+     * @expectedException \DICIT\Exception\UnbuildableServiceException
      */
     public function testActicationFailsWithMissingMethod()
     {

@@ -1,10 +1,7 @@
 <?php
 namespace DICIT\Activators;
 
-use DICIT\ActivatorDecorator;
 use DICIT\Container;
-use DICIT\UnbuildableServiceException;
-use DICIT\Activator;
 
 class AbstractActivatorDecorator implements ActivatorDecorator
 {

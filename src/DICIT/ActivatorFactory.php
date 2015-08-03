@@ -2,12 +2,7 @@
 
 namespace DICIT;
 
-use DICIT\Activators\DefaultActivator;
-use DICIT\Activators\StaticInvocationActivator;
-use DICIT\Activators\InstanceInvocationActivator;
-use DICIT\Activators\LazyActivator;
-use DICIT\Activators\RemoteActivator;
-use DICIT\Activators\RemoteAdapterFactory;
+use DICIT\Activators\Activator;
 
 interface ActivatorFactory
 {

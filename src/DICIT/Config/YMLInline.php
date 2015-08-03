@@ -1,6 +1,8 @@
 <?php
 namespace DICIT\Config;
 
+use Symfony\Component\Yaml\Yaml;
+
 class YMLInline extends AbstractConfig
 {
     protected $inline = '';
@@ -18,7 +20,7 @@ class YMLInline extends AbstractConfig
 
     protected function loadInline($inline)
     {
-        $yaml = new \Symfony\Component\Yaml\Yaml();
+        $yaml = new Yaml();
         $res = $yaml->parse($inline);
         return $res;
     }

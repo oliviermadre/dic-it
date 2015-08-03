@@ -1,7 +1,12 @@
 <?php
 namespace DICIT;
 
-use \DICIT\Util\Arrays;
+use DICIT\Encapsulators\Encapsulator;
+use DICIT\Exception\IllegalTypeException;
+use DICIT\Exception\UnknownDefinitionException;
+use DICIT\Injectors\Injector;
+use DICIT\Util\Arrays;
+use ProxyManager\Configuration;
 
 class Container
 {
@@ -54,7 +59,7 @@ class Container
     protected $referenceResolver = null;
 
     /**
-     * @var \ProxyManager\Configuration|null
+     * @var Configuration|null
      */
     protected $lazyConfig = null;
 
@@ -67,7 +72,8 @@ class Container
     public function __construct(
         Config\AbstractConfig $cfg,
         ActivatorFactory $activatorFactory = null,
-        InjectorFactory $injectorFactory = null
+        InjectorFactory $injectorFactory = null,
+        EncapsulatorFactory $encapsulatorFactory = null
     ) {
         $this->registry = new Registry();
         $this->config = new ArrayResolver($cfg->load());
@@ -77,10 +83,10 @@ class Container
 
         $this->activatorFactory = $activatorFactory ?: new ActivatorFactoryPrebuilt();
         $this->injectorFactory = $injectorFactory ?: new InjectorFactory();
-        $this->encapsulatorFactory = new EncapsulatorFactory();
+        $this->encapsulatorFactory = $encapsulatorFactory ?: new EncapsulatorFactory();
         $this->referenceResolver = new ReferenceResolver($this);
 
-        $this->lazyConfig = new \ProxyManager\Configuration();
+        $this->lazyConfig = new Configuration();
         spl_autoload_register($this->lazyConfig->getProxyAutoloader());
     }
 
@@ -108,7 +114,7 @@ class Container
     public function setLazyConfig($lazyCachePath)
     {
         spl_autoload_unregister($this->lazyConfig->getProxyAutoloader());
-        $this->lazyConfig = new ProxyManager\Configuration();
+        $this->lazyConfig = new Configuration();
         $this->lazyConfig->setProxiesTargetDir($lazyCachePath);
         spl_autoload_register($this->lazyConfig->getProxyAutoloader());
 

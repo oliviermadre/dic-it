@@ -1,5 +1,5 @@
 <?php
-namespace DICIT;
+namespace DICIT\Activators;
 
 interface ActivatorDecorator extends Activator
 {

@@ -2,6 +2,7 @@
 
 namespace DICIT;
 
+use DICIT\Injectors\Injector;
 use DICIT\Injectors\MethodInjector;
 use DICIT\Injectors\PropertyInjector;
 

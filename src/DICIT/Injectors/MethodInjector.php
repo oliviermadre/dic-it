@@ -2,9 +2,8 @@
 
 namespace DICIT\Injectors;
 
-use DICIT\Injector;
+use DICIT\Exception\UnbuildableServiceException;
 use DICIT\Container;
-use DICIT\UnbuildableServiceException;
 
 class MethodInjector implements Injector
 {

@@ -1,7 +1,6 @@
 <?php
 namespace DICIT\Encapsulators;
 
-use DICIT\Encapsulator;
 use DICIT\Container;
 
 class InterceptorEncapsulator implements Encapsulator

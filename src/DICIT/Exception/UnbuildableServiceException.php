@@ -1,6 +1,6 @@
 <?php
 
-namespace DICIT;
+namespace DICIT\Exception;
 
 class UnbuildableServiceException extends \RuntimeException
 {

@@ -1,6 +1,8 @@
 <?php
 
-namespace DICIT;
+namespace DICIT\Injectors;
+
+use DICIT\Container;
 
 interface Injector
 {

@@ -2,6 +2,7 @@
 
 namespace DICIT;
 
+use DICIT\Encapsulators\Encapsulator;
 use DICIT\Encapsulators\InterceptorEncapsulator;
 
 class EncapsulatorFactory
