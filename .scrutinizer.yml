@@ -16,3 +16,16 @@ tools:
 changetracking:
     bug_patterns: ["\bfix(?:es|ed)?\b"]
     feature_patterns: ["\badd(?:s|ed)?\b", "\bimplement(?:s|ed)?\b"]
+
+checks:
+    php:
+        excluded_dependencies:
+            - zendframework/zend-loader
+            - zendframework/zend-escaper
+            - zendframework/zend-http
+            - zendframework/zend-loader
+            - zendframework/zend-math
+            - zendframework/zend-stdlib
+            - zendframework/zend-validator
+            - zendframework/zend-xmlrpc
+            
