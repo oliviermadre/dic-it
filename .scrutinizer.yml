@@ -28,4 +28,9 @@ checks:
             - zendframework/zend-stdlib
             - zendframework/zend-validator
             - zendframework/zend-xmlrpc
-            
+            - zendframework/zend-code
+            - zendframework/zend-eventmanager
+            - zendframework/zend-json
+            - zendframework/zend-server
+            - zendframework/zend-soap
+            - zendframework/zend-uri
