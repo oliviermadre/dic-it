@@ -14,11 +14,11 @@ class ParamsResolver
     public static function resolveParams(Container $container, $params)
     {
         $resolvedParams = array();
-        foreach($params as $key=>$param) {
+        foreach ($params as $key=>$param) {
             $resolvedParam = null;
             if (is_array($param)) {
                 $resolvedParam = self::resolveParams($container, $param);
-            } else if (is_string($param)){
+            } elseif (is_string($param)) {
                 $resolvedParam = $container->resolve($param);
             } else {
                 $resolvedParam = $param;

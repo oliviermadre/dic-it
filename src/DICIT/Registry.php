@@ -29,11 +29,9 @@ class Registry
     {
         if ($this->has($key)) {
             return $this->data[$key];
-        }
-        else if ($throwIfNotFound) {
+        } elseif ($throwIfNotFound) {
             throw new \RuntimeException('Key ' . $key . ' not found in DI Container registry');
-        }
-        else {
+        } else {
             return null;
         }
     }

@@ -3,5 +3,5 @@ namespace DICIT;
 
 interface ActivatorDecorator extends Activator
 {
-    function setNext(Activator $activator);
+    public function setNext(Activator $activator);
 }

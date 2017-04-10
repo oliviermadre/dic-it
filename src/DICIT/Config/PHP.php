@@ -15,8 +15,7 @@ class PHP extends AbstractConfig
         if (file_exists($this->filePath) && is_readable($this->filePath)) {
             $array = include $this->filePath;
             return $array;
-        }
-        else {
+        } else {
             throw new \RuntimeException("Couldn't load the array in path '" . $this->filePath . "'");
         }
     }

@@ -20,20 +20,22 @@ class YML extends AbstractConfig
 
     protected function loadFile($filePath)
     {
+        if (!is_file($filePath)) {
+            throw new \Exception('File not found: ' . $filePath);
+        }
         $yml = array();
         $dirname = dirname($filePath);
         $yaml = new \Symfony\Component\Yaml\Yaml();
-        $res = $yaml->parse($filePath);
+        $res = $yaml->parse(file_get_contents($filePath));
 
-        foreach($res as $key => $value) {
+        foreach ($res as $key => $value) {
             if ($key == 'include') {
-                foreach($value as $file) {
-                    $file = preg_replace_callback('`\${env\.([^}]+)}`i', function($matches) { return getenv($matches[1]); }, $file);
+                foreach ($value as $file) {
+                    $file = preg_replace_callback('`\${env\.([^}]+)}`i', function ($matches) { return getenv($matches[1]); }, $file);
                     $subYml = $this->loadFile($dirname . '/' . $file);
                     $yml = Arrays::mergeRecursiveUnique($yml, $subYml);
                 }
-            }
-            else {
+            } else {
                 $yml = Arrays::mergeRecursiveUnique($yml, array($key => $res[$key]));
             }
         }

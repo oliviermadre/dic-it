@@ -85,8 +85,7 @@ class Container
     {
         if (is_array($item)) {
             $this->classes[$key] = $item;
-        }
-        else {
+        } else {
             $this->registry->set($key, $item);
         }
     }
@@ -105,7 +104,7 @@ class Container
 
         $root = array();
         $r = &$root;
-        foreach($path as $subNode) {
+        foreach ($path as $subNode) {
             $r[$subNode] = array();
             $r = &$r[$subNode];
         }
@@ -114,8 +113,7 @@ class Container
 
         if ($this->parameters) {
             $parameters = $this->parameters->extract();
-        }
-        else {
+        } else {
             $parameters = array();
         }
 
@@ -139,6 +137,16 @@ class Container
         return $value;
     }
 
+    public function has($serviceName)
+    {
+        $serviceConfig = $this->classes->resolve($serviceName, null);
+        if ($serviceConfig) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * Retrieve a class configured in the container
      * @param  string $serviceName
@@ -158,8 +166,7 @@ class Container
 
         try {
             return $this->loadService($serviceName, $serviceConfig->extract());
-        }
-        catch (\DICIT\UnknownDefinitionException $ex) {
+        } catch (\DICIT\UnknownDefinitionException $ex) {
             throw new \RuntimeException(
                 sprintf("Dependency '%s' not found while trying to build '%s'.",
                     $ex->getServiceName(), $serviceName));
@@ -290,7 +297,7 @@ class Container
         }
 
         if (is_array($value)) {
-            array_walk_recursive($value, function($item, $k) use($key) {
+            array_walk_recursive($value, function ($item, $k) use ($key) {
                 if (!is_scalar($item)) {
                     throw new IllegalTypeException(
                         sprintf("Can't bind parameter, unauthorized value on key '%s' of '%s'", $k, $key));
